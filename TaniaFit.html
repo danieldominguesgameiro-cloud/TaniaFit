@@ -214,11 +214,10 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
   transition: background-color 0.35s ease;
   display: flex;
   justify-content: center;
-  /* Safe areas filled with var(--bg) color */
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
@@ -1334,6 +1333,11 @@ body.light-theme .setup-activity-item.active {
 }
 
 </style>
+<style>
+  /* TaniaFit: app layout */
+  body { overflow: hidden; }
+  #setupOverlay { display: none !important; }
+</style>
 </head>
 <body>
 <div id="app-container" style="display:none;">
@@ -2042,15 +2046,13 @@ async function loadState() {
   if (!S.muscleLog) S.muscleLog = {};
   if (!S.settings) S.settings = { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200 };
 
-  // 4. Show setup or app
+  // 4. Show app or redirect to setup
   if (!S.profile) {
-    document.getElementById('setupOverlay').style.display = 'block';
-    document.getElementById('app-container').style.display = 'none';
+    window.location.href = 'setup.html';
+    return;
   } else {
     if (!S.weights || !S.weights.length) S.weights = [{date: S.profile.startDate, val: S.profile.startWeight}];
     computeConstants();
-    document.getElementById('setupOverlay').style.display = 'none';
-    document.getElementById('app-container').style.display = '';
     init();
   }
 }
@@ -2931,25 +2933,33 @@ let setupSex = 'M';
 let setupActivity = 1.2;
 
 function showSetup() {
-  document.getElementById('setupOverlay').style.display = 'block';
-  document.getElementById('app-container').style.display = 'none';
+  document.body.classList.remove('app-mode'); document.body.classList.add('setup-mode');
 }
 
 function selectSetupSex(sex) {
   setupSex = sex;
   document.getElementById('setupSexM').style.cssText = sex === 'M'
-    ? 'padding:14px;border-radius:12px;border:1.5px solid var(--accent);background:rgba(168,255,62,0.08);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);'
-    : 'padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;font-weight:600;color:var(--muted2);';
+    ? 'padding:14px;border-radius:12px;border:1.5px solid #c8ff00;background:rgba(200,255,0,0.08);text-align:center;cursor:pointer;font-weight:600;color:#c8ff00;'
+    : 'padding:14px;border-radius:12px;border:1px solid #3a3a3c;background:#1c1c1e;text-align:center;cursor:pointer;font-weight:600;color:rgba(255,255,255,0.4);';
   document.getElementById('setupSexF').style.cssText = sex === 'F'
-    ? 'padding:14px;border-radius:12px;border:1.5px solid var(--accent);background:rgba(168,255,62,0.08);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);'
-    : 'padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;font-weight:600;color:var(--muted2);';
+    ? 'padding:14px;border-radius:12px;border:1.5px solid #c8ff00;background:rgba(200,255,0,0.08);text-align:center;cursor:pointer;font-weight:600;color:#c8ff00;'
+    : 'padding:14px;border-radius:12px;border:1px solid #3a3a3c;background:#1c1c1e;text-align:center;cursor:pointer;font-weight:600;color:rgba(255,255,255,0.4);';
   updateSetupPreview();
 }
 
-function selectSetupActivity(val, emoji, name, desc) {
+function selectSetupActivity(val) {
   setupActivity = val;
-  document.querySelectorAll('.setup-activity-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('act-' + val).classList.add('active');
+  [1.2, 1.375, 1.55, 1.725].forEach(v => {
+    const el = document.getElementById('act-' + v);
+    if (!el) return;
+    if (v === val) {
+      el.style.border = '1.5px solid #c8ff00';
+      el.style.background = 'rgba(200,255,0,0.06)';
+    } else {
+      el.style.border = '1px solid #3a3a3c';
+      el.style.background = '#1c1c1e';
+    }
+  });
   updateSetupPreview();
 }
 
@@ -2985,26 +2995,26 @@ function updateSetupPreview() {
   preview.style.display = 'block';
   document.getElementById('setupPreviewContent').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--accent2);">${tdee}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">kcal dépensées/jour</div>
+      <div style="background:#1c1c1e;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#ff6b35;">${tdee}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;">kcal dépensées/jour</div>
       </div>
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--accent);">${maxCal}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">kcal à manger/jour</div>
+      <div style="background:#1c1c1e;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#c8ff00;">${maxCal}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;">kcal à manger/jour</div>
       </div>
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--blue);">${protTarget}g</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">protéines/jour</div>
+      <div style="background:#1c1c1e;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#4da6ff;">${protTarget}g</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;">protéines/jour</div>
       </div>
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--text);">${weeksNeeded}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">semaines estimées</div>
+      <div style="background:#1c1c1e;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#fff;">${weeksNeeded}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;">semaines estimées</div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--muted2);line-height:1.6;">
-      Déficit de <strong style="color:var(--accent2)">−${deficit} kcal/jour</strong> · 
-      Perte ~<strong style="color:var(--accent)">${kgPerWeek.toFixed(1)} kg/semaine</strong>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6;">
+      Déficit de <strong style="color:#ff6b35">−${deficit} kcal/jour</strong> · 
+      Perte ~<strong style="color:#c8ff00">${kgPerWeek.toFixed(1)} kg/semaine</strong>
     </div>`;
 
   // Store computed values for finishSetup
@@ -3038,8 +3048,7 @@ function finishSetup() {
   save();
   computeConstants();
 
-  document.getElementById('setupOverlay').style.display = 'none';
-  document.getElementById('app-container').style.display = '';
+  document.body.classList.remove('setup-mode'); document.body.classList.add('app-mode');
   init();
   showToast('Bienvenue ' + name + ' ! 🎉');
 }
@@ -3962,8 +3971,7 @@ if (new URLSearchParams(window.location.search).get('reset') === '1') {
 document.addEventListener('DOMContentLoaded', () => {
   const hasUser = localStorage.getItem('taniafit_user');
   if (!hasUser) {
-    document.getElementById('setupOverlay').style.display = 'block';
-    document.getElementById('app-container').style.display = 'none';
+    document.body.classList.remove('app-mode'); document.body.classList.add('setup-mode');
   }
 });
 loadState();
@@ -4014,71 +4022,81 @@ loadState();
 </div>
 
 <!-- SETUP SCREEN -->
-<div id="setupOverlay" style="display:block;position:fixed;inset:0;background:#1c1c1e;z-index:2000;overflow-y:auto;padding:24px 20px 48px;">
-  <div style="max-width:430px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:32px;padding-top:20px;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:6px;color:var(--text);">BIENVENUE</div>
-      <div style="font-size:14px;color:var(--muted2);margin-top:8px;">Crée ton profil pour commencer</div>
+<div id="setupOverlay" style="display:block;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;min-height:100vh;background:#1c1c1e;z-index:9999;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:40px 20px 80px;box-sizing:border-box;">
+  <div style="max-width:430px;margin:0 auto;color:#ffffff;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:36px;font-weight:900;letter-spacing:6px;color:#ffffff;font-family:sans-serif;">BIENVENUE</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:8px;font-family:sans-serif;">Crée ton profil pour commencer</div>
     </div>
 
-    <!-- Step 1: Identity -->
     <div id="setupStep1">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">👤 Identité</div>
-        <div class="form-group">
-          <label>Prénom</label>
-          <input class="form-input" id="setupName" placeholder="Ex: Tania" oninput="updateSetupPreview()">
+      <div style="background:#2c2c2e;border:1px solid #3a3a3c;border-radius:20px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8ff00;margin-bottom:16px;">👤 Identité</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Prénom</label>
+          <input style="width:100%;background:#1c1c1e;border:1px solid #3a3a3c;border-radius:12px;padding:12px 13px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;" id="setupName" placeholder="Ex: Tania" oninput="updateSetupPreview()">
         </div>
-        <div class="form-group">
-          <label>Sexe</label>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Sexe</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div id="setupSexM" onclick="selectSetupSex('M')" style="padding:14px;border-radius:12px;border:1.5px solid var(--accent);background:rgba(168,255,62,0.08);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);">♂ Homme</div>
-            <div id="setupSexF" onclick="selectSetupSex('F')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;font-weight:600;color:var(--muted2);">♀ Femme</div>
+            <div id="setupSexM" onclick="selectSetupSex('M')" style="padding:14px;border-radius:12px;border:1.5px solid #c8ff00;background:rgba(200,255,0,0.08);text-align:center;cursor:pointer;font-weight:600;color:#c8ff00;">♂ Homme</div>
+            <div id="setupSexF" onclick="selectSetupSex('F')" style="padding:14px;border-radius:12px;border:1px solid #3a3a3c;background:#1c1c1e;text-align:center;cursor:pointer;font-weight:600;color:rgba(255,255,255,0.4);">♀ Femme</div>
           </div>
         </div>
-        <div class="form-grid">
-          <div class="form-group"><label>Âge</label><input class="form-input" id="setupAge" type="number" placeholder="23" oninput="updateSetupPreview()"></div>
-          <div class="form-group"><label>Taille (cm)</label><input class="form-input" id="setupHeight" type="number" placeholder="175" oninput="updateSetupPreview()"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <label style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Âge</label>
+            <input style="width:100%;background:#1c1c1e;border:1px solid #3a3a3c;border-radius:12px;padding:12px 13px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;" id="setupAge" type="number" placeholder="23" oninput="updateSetupPreview()">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Taille (cm)</label>
+            <input style="width:100%;background:#1c1c1e;border:1px solid #3a3a3c;border-radius:12px;padding:12px 13px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;" id="setupHeight" type="number" placeholder="175" oninput="updateSetupPreview()">
+          </div>
         </div>
       </div>
 
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">⚖️ Poids</div>
-        <div class="form-grid">
-          <div class="form-group"><label>Poids actuel (kg)</label><input class="form-input" id="setupWeight" type="number" step="0.1" placeholder="70.0" oninput="updateSetupPreview()"></div>
-          <div class="form-group"><label>Objectif (kg)</label><input class="form-input" id="setupGoal" type="number" step="0.1" placeholder="60.0" oninput="updateSetupPreview()"></div>
+      <div style="background:#2c2c2e;border:1px solid #3a3a3c;border-radius:20px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8ff00;margin-bottom:16px;">⚖️ Poids</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <label style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Poids actuel (kg)</label>
+            <input style="width:100%;background:#1c1c1e;border:1px solid #3a3a3c;border-radius:12px;padding:12px 13px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;" id="setupWeight" type="number" step="0.1" placeholder="70.0" oninput="updateSetupPreview()">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Objectif (kg)</label>
+            <input style="width:100%;background:#1c1c1e;border:1px solid #3a3a3c;border-radius:12px;padding:12px 13px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;" id="setupGoal" type="number" step="0.1" placeholder="60.0" oninput="updateSetupPreview()">
+          </div>
         </div>
       </div>
 
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">🏃 Activité physique</div>
-        <div style="display:flex;flex-direction:column;gap:8px;" id="setupActivityList">
-          <div onclick="selectSetupActivity(1.2,'🛋️','Sédentaire','Peu ou pas de sport')" class="setup-activity-item active" id="act-1.2">
+      <div style="background:#2c2c2e;border:1px solid #3a3a3c;border-radius:20px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8ff00;margin-bottom:16px;">🏃 Activité physique</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div onclick="selectSetupActivity(1.2)" id="act-1.2" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;border:1.5px solid #c8ff00;background:rgba(200,255,0,0.06);cursor:pointer;">
             <div style="font-size:20px;">🛋️</div>
-            <div><div style="font-size:13px;font-weight:600;">Sédentaire</div><div style="font-size:11px;color:var(--muted2);">Peu ou pas de sport</div></div>
+            <div><div style="font-size:13px;font-weight:600;color:#fff;">Sédentaire</div><div style="font-size:11px;color:rgba(255,255,255,0.4);">Peu ou pas de sport</div></div>
           </div>
-          <div onclick="selectSetupActivity(1.375,'🚶','Légèrement actif','1–3 fois/semaine')" class="setup-activity-item" id="act-1.375">
+          <div onclick="selectSetupActivity(1.375)" id="act-1.375" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;border:1px solid #3a3a3c;background:#1c1c1e;cursor:pointer;">
             <div style="font-size:20px;">🚶</div>
-            <div><div style="font-size:13px;font-weight:600;">Légèrement actif</div><div style="font-size:11px;color:var(--muted2);">1–3 fois/semaine</div></div>
+            <div><div style="font-size:13px;font-weight:600;color:#fff;">Légèrement actif</div><div style="font-size:11px;color:rgba(255,255,255,0.4);">1–3 fois/semaine</div></div>
           </div>
-          <div onclick="selectSetupActivity(1.55,'🏋️','Modérément actif','3–5 fois/semaine')" class="setup-activity-item" id="act-1.55">
+          <div onclick="selectSetupActivity(1.55)" id="act-1.55" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;border:1px solid #3a3a3c;background:#1c1c1e;cursor:pointer;">
             <div style="font-size:20px;">🏋️</div>
-            <div><div style="font-size:13px;font-weight:600;">Modérément actif</div><div style="font-size:11px;color:var(--muted2);">3–5 fois/semaine</div></div>
+            <div><div style="font-size:13px;font-weight:600;color:#fff;">Modérément actif</div><div style="font-size:11px;color:rgba(255,255,255,0.4);">3–5 fois/semaine</div></div>
           </div>
-          <div onclick="selectSetupActivity(1.725,'🔥','Très actif','6–7 fois/semaine')" class="setup-activity-item" id="act-1.725">
+          <div onclick="selectSetupActivity(1.725)" id="act-1.725" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;border:1px solid #3a3a3c;background:#1c1c1e;cursor:pointer;">
             <div style="font-size:20px;">🔥</div>
-            <div><div style="font-size:13px;font-weight:600;">Très actif</div><div style="font-size:11px;color:var(--muted2);">6–7 fois/semaine</div></div>
+            <div><div style="font-size:13px;font-weight:600;color:#fff;">Très actif</div><div style="font-size:11px;color:rgba(255,255,255,0.4);">6–7 fois/semaine</div></div>
           </div>
         </div>
       </div>
 
-      <!-- Preview card -->
-      <div id="setupPreview" style="display:none;background:var(--surface);border:1.5px solid var(--accent);border-radius:20px;padding:20px;margin-bottom:20px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">📊 Ton plan calculé</div>
+      <div id="setupPreview" style="display:none;background:#2c2c2e;border:1.5px solid #c8ff00;border-radius:20px;padding:20px;margin-bottom:20px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c8ff00;margin-bottom:14px;">📊 Ton plan calculé</div>
         <div id="setupPreviewContent"></div>
       </div>
 
-      <button onclick="finishSetup()" class="btn-confirm" id="setupBtn" style="opacity:0.4;pointer-events:none;">Créer mon profil</button>
+      <button onclick="finishSetup()" id="setupBtn" style="width:100%;background:#c8ff00;color:#000;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;padding:15px;border-radius:14px;border:none;cursor:pointer;opacity:0.4;pointer-events:none;">Créer mon profil</button>
     </div>
   </div>
 </div>

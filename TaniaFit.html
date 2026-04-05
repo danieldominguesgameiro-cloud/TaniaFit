@@ -1336,7 +1336,7 @@ body.light-theme .setup-activity-item.active {
 </style>
 </head>
 <body>
-<div id="app-container">
+<div id="app-container" style="display:none;">
 
 <div class="toast" id="toast"></div>
 
@@ -2044,10 +2044,13 @@ async function loadState() {
 
   // 4. Show setup or app
   if (!S.profile) {
-    showSetup();
+    document.getElementById('setupOverlay').style.display = 'block';
+    document.getElementById('app-container').style.display = 'none';
   } else {
     if (!S.weights || !S.weights.length) S.weights = [{date: S.profile.startDate, val: S.profile.startWeight}];
     computeConstants();
+    document.getElementById('setupOverlay').style.display = 'none';
+    document.getElementById('app-container').style.display = '';
     init();
   }
 }
@@ -4001,7 +4004,7 @@ loadState();
 </div>
 
 <!-- SETUP SCREEN -->
-<div id="setupOverlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;overflow-y:auto;padding:24px 20px 48px;">
+<div id="setupOverlay" style="display:block;position:fixed;inset:0;background:var(--bg);z-index:2000;overflow-y:auto;padding:24px 20px 48px;">
   <div style="max-width:430px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:32px;padding-top:20px;">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:6px;color:var(--text);">BIENVENUE</div>

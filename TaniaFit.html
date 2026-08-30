@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" id="themeColor" content="#ff7a3d">
+<meta name="theme-color" id="themeColor" content="#3fb8e8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>TANIA FIT</title>
@@ -133,37 +133,40 @@ body.light-theme {
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html { background: #6fd3ec; height:100%; width:100%; transition: background-color 0.4s ease; }
+html {
+  background: #3fb8e8;              /* = stop 0 du degrade "sky" du SVG */
+  height:100%; width:100%;
+  overscroll-behavior: none;        /* supprime le rebond elastique iOS */
+  transition: background-color 0.4s ease;
+}
 
 body {
-  background: #6fd3ec;
+  background: #3fb8e8;
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-  margin:0; width:100%; height:100%; overflow:hidden;
+  margin:0; padding:0; width:100%; height:100%; overflow:hidden;
+  overscroll-behavior: none;
   display:flex; justify-content:center;
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
   box-sizing:border-box;
   transition: background-color 0.4s ease;
 }
 
 /* ===== BEACH SCENE BACKGROUND (SVG, rich cartoon) ===== */
 #beach-bg {
-  /* Deborde volontairement au-dela du viewport : sans ca, les zones sures iOS
-     (encoche, barre d'accueil, barre Safari) laissent apparaitre des bandes unies. */
+  /* Doit couvrir l'ecran ENTIER, encoche et barre d'accueil comprises,
+     et deborder sous les barres Safari qui se retractent au scroll. */
   position: fixed;
-  left: 0; right: 0;
-  top: calc(-160px - env(safe-area-inset-top));
-  bottom: calc(-160px - env(safe-area-inset-bottom));
+  left: -40px; right: -40px;
+  top: -80px;
+  height: calc(100vh + 160px);
+  height: calc(100lvh + 160px);   /* lvh = viewport barres retractees */
   z-index: 0; overflow: hidden; pointer-events: none;
-  background: #6fd3ec;
+  background: #3fb8e8;
 }
 #beach-bg svg.beach-svg {
   position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover;
+  display:block;
 }
 /* parallax-y floating bits handled inside SVG via CSS classes */
 .bsun { transform-origin:center; animation: floaty 7s ease-in-out infinite; }
@@ -190,6 +193,11 @@ body.light-theme #beach-bg { display:block; }
   max-width: 440px; width:100%; height:100%;
   display:flex; flex-direction:column; overflow:hidden; position:relative;
   z-index: 1;
+  /* Les marges de zone sure sont ici, plus sur <body> */
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing: border-box;
 }
 
 /* gentle float for hero accents */
@@ -253,7 +261,7 @@ body.light-theme #beach-bg { display:block; }
 
 /* ============ BOTTOM NAV ============ */
 .bottom-nav {
-  display:flex; align-items:center; position:absolute; bottom:14px; left:50%;
+  display:flex; align-items:center; position:absolute; bottom:calc(14px + env(safe-area-inset-bottom)); left:50%;
   transform:translateX(-50%); width:calc(100% - 24px); max-width:416px;
   background: rgba(255,255,255,0.82);
   border: 1.5px solid rgba(255,255,255,0.9);
@@ -279,7 +287,7 @@ body.light-theme .bottom-nav { background: rgba(39,29,57,0.85); border-color: rg
 
 /* ============ CONTENT ============ */
 .content { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; background:transparent; }
-.page { display:none; padding:8px 14px 116px; }
+.page { display:none; padding:8px 14px calc(116px + env(safe-area-inset-bottom)); }
 .page.active { display:block; animation: pageIn 0.45s cubic-bezier(.34,1.4,.5,1); }
 @keyframes pageIn { from{opacity:0; transform:translateY(10px) scale(0.99)} to{opacity:1; transform:none} }
 
@@ -1199,6 +1207,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         <button class="btn-import" onclick="document.getElementById('importFile').click()">⬆️ Importer</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
       </div>
+    </div>
+
+    <div style="text-align:center;font-size:10px;color:var(--muted2);padding:6px 0 4px;letter-spacing:0.5px;">
+      version <strong id="appVersion">v6 · 30-08-2026</strong>
     </div>
   </div>
 
@@ -3802,7 +3814,7 @@ function toggleAccordion(id, headerEl) {
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light-theme');
   document.getElementById('themeToggle').classList.toggle('on', isLight);
-  document.getElementById('themeColor').content = isLight ? '#1a1424' : '#ff7a3d';
+  document.getElementById('themeColor').content = isLight ? '#1a1424' : '#3fb8e8';
   try { localStorage.setItem(STORAGE_NS + '_theme', isLight ? 'light' : 'dark'); } catch(e) {}
 }
 

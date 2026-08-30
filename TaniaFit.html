@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" id="themeColor" content="#3fb8e8">
+<meta name="theme-color" id="themeColor" content="#f5c870">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>TANIA FIT</title>
@@ -134,14 +134,14 @@ body.light-theme {
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 html {
-  background: #3fb8e8;              /* = stop 0 du degrade "sky" du SVG */
+  background: #f5c870;              /* = stop 1 du degrade "sand", bas du SVG */
   height:100%; width:100%;
   overscroll-behavior: none;        /* supprime le rebond elastique iOS */
   transition: background-color 0.4s ease;
 }
 
 body {
-  background: #3fb8e8;
+  background: #f5c870;
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -1210,7 +1210,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     </div>
 
     <div style="text-align:center;font-size:10px;color:var(--muted2);padding:6px 0 4px;letter-spacing:0.5px;">
-      version <strong id="appVersion">v6 · 30-08-2026</strong>
+      version <strong id="appVersion">v7 · 30-08-2026</strong>
     </div>
   </div>
 
@@ -3814,7 +3814,7 @@ function toggleAccordion(id, headerEl) {
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light-theme');
   document.getElementById('themeToggle').classList.toggle('on', isLight);
-  document.getElementById('themeColor').content = isLight ? '#1a1424' : '#3fb8e8';
+  document.getElementById('themeColor').content = isLight ? '#1a1424' : '#f5c870';
   try { localStorage.setItem(STORAGE_NS + '_theme', isLight ? 'light' : 'dark'); } catch(e) {}
 }
 

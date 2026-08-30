@@ -951,12 +951,15 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     </div>
     <div id="mealList"></div>
 
-    <div class="section-head" style="margin-top:16px;">
-      <div class="section-title">💪 Sport</div>
-      <button class="btn-add" onclick="openSportModal()">+ Ajouter</button>
+    <div id="sportSection">
+      <div class="section-head" style="margin-top:16px;">
+        <div class="section-title">💪 Sport</div>
+        <button class="btn-add" onclick="openSportModal()">+ Ajouter</button>
+      </div>
+      <div id="sportList"></div>
     </div>
-    <div id="sportList"></div>
 
+    <div id="activitySection">
     <div class="section-head" style="margin-top:16px;">
       <div class="section-title">🔥 Activité du jour</div>
     </div>
@@ -989,6 +992,11 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
 
       <div id="actLockNote" style="display:none;font-size:11px;color:var(--accent2);margin-top:11px;line-height:1.5;"></div>
       <button id="actClearBtn" onclick="clearActivityToday()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--font-body);font-size:12.5px;font-weight:700;cursor:pointer;">🗑️ Effacer la valeur du jour</button>
+    </div>
+    </div>
+
+    <div id="tdeeTotalNote" style="display:none;margin-top:16px;background:var(--surface2);border-radius:14px;padding:13px 15px;font-size:11.5px;color:var(--muted2);line-height:1.6;">
+      🔒 Mode <strong>dépense totale</strong> : ton activité est déjà comprise dans le chiffre réglé. Les ajouts de sport, de pas et d'Apple Watch sont désactivés pour ne pas compter deux fois. Tu peux repasser en mode métabolisme dans Réglages.
     </div>
   </div>
 
@@ -1120,19 +1128,28 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
           <label style="font-size:11px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;">Déficit calorique / jour</label>
           <span id="deficitDisplay" style="font-size:18px;font-weight:700;color:var(--accent2);">−1100 kcal</span>
         </div>
-        <input type="range" id="sDeficit" min="500" max="1500" step="50" value="1100"
+        <input type="range" id="sDeficit" min="50" max="1500" step="25" value="1100"
           style="width:100%;accent-color:var(--accent2);height:4px;cursor:pointer;"
           oninput="onDeficitChange()">
         <div style="display:flex;justify-content:space-between;margin-top:4px;">
-          <span style="font-size:10px;color:var(--muted2);">−500 (doux)</span>
+          <span style="font-size:10px;color:var(--muted2);">−50 (très doux)</span>
           <span style="font-size:10px;color:var(--muted2);">−1500 (agressif)</span>
         </div>
         <div id="deficitResult" style="margin-top:10px;background:var(--surface2);border-radius:12px;padding:10px 14px;font-size:12px;color:var(--muted2);line-height:1.7;"></div>
       </div>
 
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">Comment tu renseignes ta dépense</label>
+        <div class="act-mode-row">
+          <button id="tdeeModeBase" class="act-mode-btn active" onclick="setTdeeMode('base')">🔥 Métabolisme</button>
+          <button id="tdeeModeTotal" class="act-mode-btn" onclick="setTdeeMode('total')">🧮 Dépense totale</button>
+        </div>
+        <div id="tdeeModeHint" style="font-size:11px;color:var(--muted2);line-height:1.6;margin-top:9px;"></div>
+      </div>
+
       <div class="settings-grid">
         <div class="settings-field">
-          <label>TDEE – métabolisme</label>
+          <label id="sTDEELabel">TDEE – métabolisme</label>
           <input class="settings-input" type="number" id="sTDEE" value="2300" oninput="onDeficitChange()">
         </div>
         <div class="settings-field">
@@ -1212,7 +1229,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     </div>
 
     <div style="text-align:center;font-size:10px;color:var(--muted2);padding:6px 0 4px;letter-spacing:0.5px;">
-      version <strong id="appVersion">v8 · 30-08-2026</strong>
+      version <strong id="appVersion">v10 · 30-08-2026</strong>
     </div>
   </div>
 
@@ -1494,6 +1511,16 @@ function computeConstants() {
 }
 let TARGET_DEFICIT = 1100;
 
+// Budget quotidien plancher. Le deficit demande n'est reduit que s'il ferait
+// passer le budget sous ce seuil, et dans ce cas l'ecran le dit explicitement.
+const MIN_BUDGET = 800;
+
+// Deficit reellement applicable. Renvoie toujours la valeur que l'app utilisera,
+// pour que le curseur ne puisse plus afficher autre chose que la realite.
+function effectiveDeficit(tdee, wanted) {
+  return Math.max(0, Math.min(wanted, tdee - MIN_BUDGET));
+}
+
 // ===== DEFAULT DATA =====
 const DEFAULT_FOODS = [
   {id:'v1',  name:'Bœuf haché 5% MG',           cal100:121, prot100:21,  carb100:0,   fat100:5,   note:'', def:true},
@@ -1543,7 +1570,7 @@ const SPORT_DURATIONS = [15, 20, 30, 45, 60, 75, 90];
 // ===== STATE =====
 let S = {
   profile: null, // set on first launch
-  settings: { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200 },
+  settings: { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200, tdeeMode:'base' },
   foods: [...DEFAULT_FOODS],
   sports: [...DEFAULT_SPORTS],
   meals: {},
@@ -1658,7 +1685,8 @@ async function loadState() {
   if (!S.muscleLog) S.muscleLog = {};
   if (!S.steps) S.steps = {};
   if (!S.watchCal) S.watchCal = {};
-  if (!S.settings) S.settings = { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200 };
+  if (!S.settings) S.settings = { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200, tdeeMode:'base' };
+  if (!S.settings.tdeeMode) S.settings.tdeeMode = 'base';
 
   // 4. Lancement direct, sans ecran de bienvenue
   if (!S.profile) S.profile = defaultProfile();
@@ -1690,6 +1718,7 @@ function init() {
   const d = new Date();
   document.getElementById('headerDate').textContent = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   loadSettings();
+  applyTdeeMode();
   updateHeader();
   renderToday();
   renderWeek();
@@ -1717,7 +1746,7 @@ function loadSettings() {
   const tdee = S.settings.tdee || 2300;
   const maxCal = S.settings.maxCal || 1200;
   const deficit = tdee - maxCal;
-  document.getElementById('sDeficit').value = Math.min(1500, Math.max(500, deficit));
+  document.getElementById('sDeficit').value = Math.min(1500, Math.max(50, deficit));
   document.getElementById('sTDEE').value = tdee;
   document.getElementById('sProt').value = S.settings.protTarget;
   document.getElementById('sGoal').value = S.settings.goalWeight;
@@ -1734,10 +1763,39 @@ function loadSettings() {
   }
 }
 
+function setTdeeMode(mode) {
+  if (!S.settings) return;
+  S.settings.tdeeMode = mode;
+  applyTdeeMode();
+  save();
+  updateMacros(); updateHeader(); renderToday(); renderWeek(); renderControl();
+}
+
+function applyTdeeMode() {
+  const total = S.settings && S.settings.tdeeMode === 'total';
+  const set = (id, disp) => { const e = document.getElementById(id); if (e) e.style.display = disp; };
+  set('sportSection',   total ? 'none' : '');
+  set('activitySection', total ? 'none' : '');
+  set('tdeeTotalNote',  total ? '' : 'none');
+
+  const b = document.getElementById('tdeeModeBase'), t = document.getElementById('tdeeModeTotal');
+  if (b) b.classList.toggle('active', !total);
+  if (t) t.classList.toggle('active', total);
+
+  const lbl = document.getElementById('sTDEELabel');
+  if (lbl) lbl.textContent = total ? 'Dépense totale / jour' : 'TDEE – métabolisme';
+
+  const hint = document.getElementById('tdeeModeHint');
+  if (hint) hint.innerHTML = total
+    ? "Tu saisis ta dépense <strong>tout compris</strong>, activité incluse. L'app n'ajoute plus rien : sport, pas et Apple Watch sont masqués sur l'accueil. À choisir si ton activité est stable, par exemple en cas de blessure."
+    : "Tu saisis ton <strong>métabolisme</strong> hors activité. Le sport, les pas et l'Apple Watch viennent s'ajouter chaque jour et augmentent ton budget.";
+}
+
 function onDeficitChange() {
   const tdee = parseInt(document.getElementById('sTDEE').value) || 2300;
-  const deficit = parseInt(document.getElementById('sDeficit').value) || 1100;
-  const maxCal = Math.max(1000, tdee - deficit);
+  const wanted = parseInt(document.getElementById('sDeficit').value) || 1100;
+  const deficit = effectiveDeficit(tdee, wanted);
+  const maxCal = tdee - deficit;
   const kgPerWeek = (deficit * 7) / 7700;
   document.getElementById('deficitDisplay').textContent = '−' + deficit + ' kcal';
   const latest = (S.weights && S.weights.length) ? S.weights[S.weights.length-1].val : START_WEIGHT;
@@ -1753,9 +1811,12 @@ function onDeficitChange() {
   } else {
     proj = `<br><strong style="color:var(--accent)">Objectif atteint 🎉</strong>`;
   }
+  const capped = deficit < wanted
+    ? `<br><strong style="color:var(--red)">Limité à −${deficit}</strong> : au-delà, ton budget passerait sous ${MIN_BUDGET} kcal/jour. Augmente ton TDEE si le chiffre te paraît bas.`
+    : '';
   document.getElementById('deficitResult').innerHTML =
     `Budget : <strong style="color:var(--accent)">${maxCal} kcal/jour</strong> &nbsp;·&nbsp; ` +
-    `Perte estimée : <strong style="color:var(--accent2)">~${kgPerWeek.toFixed(2)} kg/semaine</strong>` + proj;
+    `Perte estimée : <strong style="color:var(--accent2)">~${kgPerWeek.toFixed(2)} kg/semaine</strong>` + proj + capped;
 }
 
 function saveApiKey() {
@@ -2000,6 +2061,9 @@ function getDayMacros(date) {
   const cal = meals.reduce((s,m) => s+m.cal, 0);
   const prot = meals.reduce((s,m) => s+m.prot, 0);
   const carb = meals.reduce((s,m) => s+m.carb, 0);
+  // Mode "dépense totale" : le chiffre saisi contient deja l'activite,
+  // donc on n'ajoute rien par-dessus, sous peine de compter deux fois.
+  if (S.settings && S.settings.tdeeMode === 'total') return { cal, prot, carb, burned: 0 };
   const sportBurned = sports.reduce((s,sp) => s+sp.cal, 0);
   const burned = sportBurned + getStepsCalories(date);
   return { cal, prot, carb, burned };
@@ -2274,7 +2338,7 @@ function renderWeek() {
   const avgDeficit = daysData ? totDeficit / daysData : 0;
   let analysis = '';
   if (!daysData) analysis = '💡 Commence à logger tes repas pour voir l\'analyse.';
-  else if (avgDeficit >= TARGET_DEFICIT) analysis = `🔥 Semaine <strong>excellente</strong> ! Déficit moyen ${Math.round(avgDeficit)} kcal/j. Tu es sur la trajectoire des 1 kg/semaine.`;
+  else if (avgDeficit >= TARGET_DEFICIT) analysis = `🔥 Semaine <strong>excellente</strong> ! Déficit moyen ${Math.round(avgDeficit)} kcal/j. Tu es sur la trajectoire des ${KG_PER_WEEK.toFixed(2)} kg/semaine.`;
   else if (avgDeficit >= TARGET_DEFICIT * 0.8) analysis = `✅ Bonne semaine ! Déficit moyen ${Math.round(avgDeficit)} kcal/j. Très proche de l'objectif.`;
   else if (avgDeficit >= 0) analysis = `⚠️ Déficit insuffisant (${Math.round(avgDeficit)} kcal/j). Il t'en faut ${TARGET_DEFICIT}. Ajoute du sport ou réduis les repas.`;
   else analysis = `🔴 Tu es en <strong>surplus calorique</strong> (${Math.round(avgDeficit)} kcal/j). Resserre dès aujourd'hui.`;
@@ -2961,10 +3025,13 @@ function toggleMuscleForDay(muscleId) {
 
 function saveSettings() {
   const tdee = parseInt(document.getElementById('sTDEE').value) || 2300;
-  const deficit = parseInt(document.getElementById('sDeficit').value) || 1100;
-  const maxCal = Math.max(1000, tdee - deficit);
+  const wanted = parseInt(document.getElementById('sDeficit').value) || 1100;
+  const deficit = effectiveDeficit(tdee, wanted);
+  // Le curseur est remis d'accord avec la valeur retenue : plus jamais
+  // d'ecart entre ce qui est affiche et ce que l'app compte.
+  document.getElementById('sDeficit').value = deficit;
   S.settings.tdee = tdee;
-  S.settings.maxCal = maxCal;
+  S.settings.maxCal = tdee - deficit;
   S.settings.protTarget = parseInt(document.getElementById('sProt').value) || 185;
   S.settings.goalWeight = parseFloat(document.getElementById('sGoal').value) || 85;
   if (!S.profile) S.profile = defaultProfile();
@@ -2977,7 +3044,7 @@ function saveSettings() {
   if (fn) S.profile.firstName = fn;
   save();
   computeConstants();
-  loadSettings(); updateMacros(); updateHeader(); applyProfileName();
+  loadSettings(); applyTdeeMode(); updateMacros(); updateHeader(); applyProfileName();
   renderToday(); renderWeek(); renderPoids(); renderControl();
   showToast('Objectifs enregistrés ✓');
 }

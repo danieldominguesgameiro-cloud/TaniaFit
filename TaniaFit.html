@@ -1541,6 +1541,33 @@ function save() {
   }, 800);
 }
 
+async function connectFirebase() {
+  if (IS_IFRAME) return;
+  try {
+    await Promise.race([window._firebaseReady, new Promise((_, r) => setTimeout(() => r(), 3000))]);
+    if (typeof firebase !== 'undefined') {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp({
+          apiKey: "AIzaSyDpUAcZ_IcEgKiGQtPMnutAGa7UTKwHSBQ",
+          authDomain: "danielfit-80ecb.firebaseapp.com",
+          projectId: "danielfit-80ecb",
+          storageBucket: "danielfit-80ecb.firebasestorage.app",
+          messagingSenderId: "206574578719",
+          appId: "1:206574578719:web:91e4e2cf8143c99307792a"
+        });
+      }
+      await Promise.race([firebase.auth().signInAnonymously(), new Promise((_, r) => setTimeout(() => r(), 5000))]);
+      const doc = await Promise.race([
+        firebase.firestore().collection('users').doc(DOC_ID).get(),
+        new Promise((_, r) => setTimeout(() => r(), 5000))
+      ]);
+      firebaseOk = true;
+      if (doc && doc.exists) S = Object.assign({}, S, doc.data());
+      else if (doc) firebase.firestore().collection('users').doc(DOC_ID).set(JSON.parse(JSON.stringify(S))).catch(()=>{});
+    }
+  } catch(e) { firebaseOk = false; }
+}
+
 async function loadState() {
   // 1. Load from localStorage first — always works offline
   try {
@@ -1570,31 +1597,7 @@ async function loadState() {
   } catch(e) {}
 
   // 2. Try Firebase
-  if (!IS_IFRAME && S.profile) {
-    try {
-      await Promise.race([window._firebaseReady, new Promise((_, r) => setTimeout(() => r(), 3000))]);
-      if (typeof firebase !== 'undefined') {
-        if (!firebase.apps || !firebase.apps.length) {
-          firebase.initializeApp({
-            apiKey: "AIzaSyDpUAcZ_IcEgKiGQtPMnutAGa7UTKwHSBQ",
-            authDomain: "danielfit-80ecb.firebaseapp.com",
-            projectId: "danielfit-80ecb",
-            storageBucket: "danielfit-80ecb.firebasestorage.app",
-            messagingSenderId: "206574578719",
-            appId: "1:206574578719:web:91e4e2cf8143c99307792a"
-          });
-        }
-        await Promise.race([firebase.auth().signInAnonymously(), new Promise((_, r) => setTimeout(() => r(), 5000))]);
-        const doc = await Promise.race([
-          firebase.firestore().collection('users').doc(DOC_ID).get(),
-          new Promise((_, r) => setTimeout(() => r(), 5000))
-        ]);
-        firebaseOk = true;
-        if (doc && doc.exists) S = Object.assign({}, S, doc.data());
-        else if (doc) firebase.firestore().collection('users').doc(DOC_ID).set(JSON.parse(JSON.stringify(S))).catch(()=>{});
-      }
-    } catch(e) { firebaseOk = false; }
-  }
+  if (S.profile) await connectFirebase();
 
   // 3. Sanitize
   if (!S.foods || !S.foods.length) S.foods = [...DEFAULT_FOODS];
@@ -2840,6 +2843,7 @@ function finishSetup() {
   localStorage.setItem('danielfit_user', docId);
   save();
   computeConstants();
+  connectFirebase().then(save); // connexion cloud immédiate pour un profil tout neuf
 
   document.getElementById('setupOverlay').style.display = 'none';
   document.getElementById('app-container').style.display = '';

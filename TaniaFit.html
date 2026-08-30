@@ -158,11 +158,12 @@ body {
      et deborder sous les barres Safari qui se retractent au scroll. */
   position: fixed;
   left: -40px; right: -40px;
-  top: -80px;
-  height: calc(100vh + 160px);
-  height: calc(100lvh + 160px);   /* lvh = viewport barres retractees */
+  top: -80px;      /* deborde sous l'encoche, qui est dans le viewport */
+  bottom: 0;       /* s'arrete pile au bas du viewport : le dernier pixel du
+                      SVG vaut #f5c870, identique au canevas qui peint la bande */
   z-index: 0; overflow: hidden; pointer-events: none;
-  background: #3fb8e8;
+  /* Repli degrade ciel vers sable, au cas ou le SVG ne remplirait pas */
+  background: linear-gradient(180deg, #3fb8e8 0%, #bdeef7 32%, #2fc3d6 48%, #ffeebb 58%, #f5c870 100%);
 }
 #beach-bg svg.beach-svg {
   position:absolute; inset:0; width:100%; height:100%;
@@ -828,6 +829,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     <path d="M300 200 Q312 190 324 200 Q336 190 348 200"/>
     <path d="M380 230 Q389 223 398 230 Q407 223 416 230"/>
   </g>
+  <rect x="0" y="1260" width="720" height="20" fill="#f5c870"/>
 </svg>
 </div>
 <div id="app-container">
@@ -1210,7 +1212,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     </div>
 
     <div style="text-align:center;font-size:10px;color:var(--muted2);padding:6px 0 4px;letter-spacing:0.5px;">
-      version <strong id="appVersion">v7 · 30-08-2026</strong>
+      version <strong id="appVersion">v8 · 30-08-2026</strong>
     </div>
   </div>
 

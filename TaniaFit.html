@@ -133,10 +133,10 @@ body.light-theme {
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html { background: #aee9f5; height:100%; width:100%; transition: background-color 0.4s ease; }
+html { background: #6fd3ec; height:100%; width:100%; transition: background-color 0.4s ease; }
 
 body {
-  background: #aee9f5;
+  background: #6fd3ec;
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -152,7 +152,13 @@ body {
 
 /* ===== BEACH SCENE BACKGROUND (SVG, rich cartoon) ===== */
 #beach-bg {
-  position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  /* Deborde volontairement au-dela du viewport : sans ca, les zones sures iOS
+     (encoche, barre d'accueil, barre Safari) laissent apparaitre des bandes unies. */
+  position: fixed;
+  left: 0; right: 0;
+  top: calc(-160px - env(safe-area-inset-top));
+  bottom: calc(-160px - env(safe-area-inset-bottom));
+  z-index: 0; overflow: hidden; pointer-events: none;
   background: #6fd3ec;
 }
 #beach-bg svg.beach-svg {
@@ -1544,6 +1550,12 @@ function save() {
     localStorage.setItem(STORAGE_NS + '_v3_' + DOC_ID, JSON.stringify(S));
   } catch(e) {}
   if (!firebaseOk) return;
+  // Garde-fou : un appareil qui vient de s'installer ne doit pas remplacer
+  // un document cloud rempli par un etat encore vide.
+  const hasContent = (S.weights && S.weights.length)
+    || (S.meals && Object.keys(S.meals).length)
+    || (S.sportLog && Object.keys(S.sportLog).length);
+  if (!hasContent) return;
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
     try {
@@ -1610,6 +1622,9 @@ async function loadState() {
     } else {
       S = Object.assign({}, S, JSON.parse(raw));
     }
+    // Donnees enregistrees par une version anterieure : elles n'ont pas d'horodatage.
+    // On les date maintenant pour qu'un document cloud vide ne prenne pas le dessus.
+    if (S.profile && !S.updatedAt) S.updatedAt = Date.now();
   } catch(e) {}
 
   // 2. Le cloud est TOUJOURS interroge, meme sans profil local.

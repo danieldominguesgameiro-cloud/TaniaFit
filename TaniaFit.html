@@ -282,19 +282,6 @@ body.light-theme .bottom-nav { background: rgba(39,29,57,0.85); border-color: rg
 .card + .card { margin-top:12px; }
 
 /* ============ TODAY ============ */
-.save-bar {
-  background: var(--grad-tropic);
-  border:none; border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:14px;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  box-shadow: 0 8px 20px -8px rgba(46,197,232,0.5);
-}
-.save-bar span { font-size:12.5px; color:#fff; font-weight:700; }
-.btn-export-mini {
-  background: rgba(255,255,255,0.25); color:#fff; border:1.5px solid rgba(255,255,255,0.5);
-  font-family: var(--font-body); font-size:10.5px; font-weight:800; letter-spacing:0.6px;
-  padding:7px 15px; border-radius:11px; cursor:pointer; white-space:nowrap; text-transform:uppercase; transition:all 0.2s;
-}
-.btn-export-mini:active { transform:scale(0.94); }
 
 .reminder {
   background: var(--card-glass); -webkit-backdrop-filter: var(--card-blur); backdrop-filter: var(--card-blur); border:1.5px solid var(--card-border-glass); border-radius:var(--radius-sm);
@@ -887,11 +874,6 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
   <!-- TODAY -->
   <div class="page active" id="page-today">
 
-    <div class="save-bar">
-      <span>💾 Sauvegarde avant de fermer</span>
-      <button class="btn-export-mini" onclick="exportData()">Exporter</button>
-    </div>
-
     <div class="reminder" id="weightReminder" onclick="goTab('poids', document.querySelectorAll('.bottom-nav .tab')[2])" style="display:none;border-color:rgba(77,166,255,0.2);">
       <div class="reminder-circle" id="weightReminderCircle" style="border-color:var(--blue);"></div>
       <span class="reminder-text" style="color:var(--blue);">⚖️ Jeudi — pèse-toi à jeun et rentre ton poids !</span>
@@ -1056,8 +1038,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         </div>
         <div class="weight-arrow">→</div>
         <div class="weight-stat">
-          <div class="weight-stat-val blue" id="wStatDays">—J</div>
-          <div class="weight-stat-label">deadline</div>
+          <div class="weight-stat-val blue" id="wStatDays">—</div>
+          <div class="weight-stat-label">objectif le</div>
         </div>
       </div>
     </div>
@@ -1143,8 +1125,23 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         </div>
         <div class="settings-field">
           <label>Poids objectif (kg)</label>
-          <input class="settings-input" type="number" id="sGoal" value="85">
+          <input class="settings-input" type="number" id="sGoal" value="85" step="0.1">
         </div>
+        <div class="settings-field">
+          <label>Poids de départ (kg)</label>
+          <input class="settings-input" type="number" id="sStartWeight" value="" step="0.1">
+        </div>
+        <div class="settings-field">
+          <label>Date de départ</label>
+          <input class="settings-input" type="date" id="sStartDate" value="">
+        </div>
+        <div class="settings-field">
+          <label>Prénom</label>
+          <input class="settings-input" type="text" id="sFirstName" value="">
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted2);line-height:1.6;margin:-4px 0 12px;">
+        Le poids de départ se remplit tout seul avec ta première pesée de l'onglet Poids. Tu peux le corriger ici si besoin.
       </div>
       <button class="btn-save-settings" onclick="saveSettings()">Enregistrer</button>
     </div>
@@ -1443,9 +1440,25 @@ let GOAL_WEIGHT_DEFAULT = 85.0;
 let WEEKS_TOTAL = 16;
 let KG_PER_WEEK = (START_WEIGHT - GOAL_WEIGHT_DEFAULT) / WEEKS_TOTAL;
 
+function defaultProfile() {
+  return {
+    firstName: 'Tania', docId: DOC_ID,
+    startDate: TODAY, startWeight: null,
+    goalWeight: (S.settings && S.settings.goalWeight) || 85,
+    sex: 'M', age: 30, height: 175, activity: 1.375
+  };
+}
+
 function computeConstants() {
+  if (!S.profile) S.profile = defaultProfile();
   const p = S.profile;
-  if (!p) return;
+  // Le poids de depart se cale sur la premiere pesee de l'onglet Poids
+  if (p.startWeight == null || !p.startWeight) {
+    if (S.weights && S.weights.length) { p.startWeight = S.weights[0].val; p.startDate = S.weights[0].date; }
+    else { p.startWeight = (p.goalWeight || 85) + 10; }
+  }
+  if (!p.goalWeight) p.goalWeight = (S.settings && S.settings.goalWeight) || 85;
+  if (!p.startDate) p.startDate = TODAY;
   START_DATE = p.startDate;
   START_WEIGHT = p.startWeight;
   GOAL_WEIGHT_DEFAULT = p.goalWeight;
@@ -1618,37 +1631,35 @@ async function loadState() {
   if (!S.watchCal) S.watchCal = {};
   if (!S.settings) S.settings = { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200 };
 
-  // 4. Show setup or launch app
-  if (!S.profile) {
-    showSetup();
-  } else {
-    if (!S.weights || !S.weights.length) S.weights = [{date: S.profile.startDate, val: S.profile.startWeight}];
-    computeConstants();
-    init();
+  // 4. Lancement direct, sans ecran de bienvenue
+  if (!S.profile) S.profile = defaultProfile();
+  if (!S.weights || !S.weights.length) {
+    if (S.profile.startWeight) S.weights = [{date: S.profile.startDate, val: S.profile.startWeight}];
+    else S.weights = [];
   }
+  computeConstants();
+  init();
 }
 
 const _tNow = new Date();
 const TODAY = _tNow.getFullYear() + '-' + String(_tNow.getMonth()+1).padStart(2,'0') + '-' + String(_tNow.getDate()).padStart(2,'0');
 let selectedFood = null;
 
-function init() {
-  loadTheme();
-  // App title from profile
-  const firstName = S.profile ? S.profile.firstName : 'Daniel';
+function applyProfileName() {
+  const firstName = (S.profile && S.profile.firstName) || 'Tania';
   document.title = firstName.toUpperCase() + ' FIT';
-  document.getElementById('appTitle').textContent = firstName + ' Fit';
-  // iPad sidebar title
+  const t = document.getElementById('appTitle');
+  if (t) t.textContent = firstName + ' Fit';
   const sidebarTitle = document.getElementById('sidebarTitle');
   if (sidebarTitle) sidebarTitle.textContent = firstName.toUpperCase() + ' FIT';
+}
+
+function init() {
+  loadTheme();
+  applyProfileName();
 
   const d = new Date();
   document.getElementById('headerDate').textContent = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  const goalDate = new Date(START_DATE);
-  goalDate.setDate(goalDate.getDate() + WEEKS_TOTAL * 7);
-  const daysLeft = Math.max(0, Math.round((goalDate - d)/86400000));
-  document.getElementById('daysLeft').textContent = daysLeft;
-  document.getElementById('wStatDays').textContent = daysLeft + 'J';
   loadSettings();
   updateHeader();
   renderToday();
@@ -1684,6 +1695,10 @@ function loadSettings() {
   document.getElementById('targCal').textContent = maxCal;
   document.getElementById('targProt').textContent = S.settings.protTarget;
   onDeficitChange();
+  const _p = S.profile || {};
+  const _sw = document.getElementById('sStartWeight'); if (_sw) _sw.value = _p.startWeight || '';
+  const _sd = document.getElementById('sStartDate');   if (_sd) _sd.value = _p.startDate || '';
+  const _fn = document.getElementById('sFirstName');   if (_fn) _fn.value = _p.firstName || '';
   const _apiKey = (S.settings && S.settings.claudeApiKey) || (S.profile && S.profile.claudeApiKey);
   if (_apiKey) {
     document.getElementById('sApiKey') && (document.getElementById('sApiKey').value = _apiKey);
@@ -1696,9 +1711,22 @@ function onDeficitChange() {
   const maxCal = Math.max(1000, tdee - deficit);
   const kgPerWeek = (deficit * 7) / 7700;
   document.getElementById('deficitDisplay').textContent = '−' + deficit + ' kcal';
+  const latest = (S.weights && S.weights.length) ? S.weights[S.weights.length-1].val : START_WEIGHT;
+  const goal = parseFloat(document.getElementById('sGoal').value) || GOAL_WEIGHT_DEFAULT;
+  const kgLeft = latest - goal;
+  let proj = '';
+  if (kgLeft > 0) {
+    const days = Math.ceil((kgLeft * 7700) / Math.max(1, deficit));
+    const d2 = new Date(); d2.setDate(d2.getDate() + days);
+    proj = `<br>Il te reste <strong style="color:var(--blue)">${kgLeft.toFixed(1)} kg</strong>, ` +
+           `soit <strong style="color:var(--blue)">${days} jours</strong> ` +
+           `(objectif atteint vers le ${d2.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'})})`;
+  } else {
+    proj = `<br><strong style="color:var(--accent)">Objectif atteint 🎉</strong>`;
+  }
   document.getElementById('deficitResult').innerHTML =
     `Budget : <strong style="color:var(--accent)">${maxCal} kcal/jour</strong> &nbsp;·&nbsp; ` +
-    `Perte estimée : <strong style="color:var(--accent2)">~${kgPerWeek.toFixed(2)} kg/semaine</strong>`;
+    `Perte estimée : <strong style="color:var(--accent2)">~${kgPerWeek.toFixed(2)} kg/semaine</strong>` + proj;
 }
 
 function saveApiKey() {
@@ -1708,7 +1736,33 @@ function saveApiKey() {
   showToast(key ? '🔑 Clé API enregistrée ✓' : 'Clé API supprimée');
 }
 
+// Jours restants recalcules en permanence a partir du poids actuel,
+// du poids objectif et du deficit quotidien choisi dans les reglages.
+function projectionDays() {
+  const latest = S.weights.length ? S.weights[S.weights.length-1].val : START_WEIGHT;
+  const goal = (S.settings && S.settings.goalWeight) || GOAL_WEIGHT_DEFAULT;
+  const kgLeft = latest - goal;
+  if (kgLeft <= 0) return 0;
+  const deficit = Math.max(1, (S.settings.tdee || 2300) - (S.settings.maxCal || 1200));
+  return Math.ceil((kgLeft * 7700) / deficit);
+}
+
+function projectionDate(days) {
+  const t = new Date();
+  t.setDate(t.getDate() + days);
+  return t;
+}
+
+function updateProjection() {
+  const days = projectionDays();
+  const dEl = document.getElementById('daysLeft');
+  if (dEl) dEl.textContent = days;
+  const wEl = document.getElementById('wStatDays');
+  if (wEl) wEl.textContent = days === 0 ? '✓' : projectionDate(days).toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
+}
+
 function updateHeader() {
+  updateProjection();
   const latest = S.weights.length ? S.weights[S.weights.length-1].val : START_WEIGHT;
   const goal = S.settings.goalWeight;
   const pct = Math.min(100, Math.max(0, Math.round((START_WEIGHT - latest) / (START_WEIGHT - goal) * 100)));
@@ -2368,7 +2422,29 @@ function getWeekNumber(dateStr) {
   const d = new Date(dateStr + 'T12:00:00');
   return Math.floor((d - start) / (7 * 86400000));
 }
-function getTheoreticalWeight(weekNum) { return Math.max(GOAL_WEIGHT_DEFAULT, START_WEIGHT - weekNum * KG_PER_WEEK); }
+function getTheoreticalWeight(weekNum) {
+  const curWeek = getWeekNumber(TODAY);
+  // Semaines passees : plan d'origine, l'historique n'est jamais reecrit
+  if (weekNum <= curWeek) return Math.max(GOAL_WEIGHT_DEFAULT, START_WEIGHT - weekNum * KG_PER_WEEK);
+  // Semaines a venir : projection depuis la derniere pesee, au rythme du deficit actuel
+  const latest = (S.weights && S.weights.length) ? S.weights[S.weights.length-1].val : START_WEIGHT;
+  return Math.max(GOAL_WEIGHT_DEFAULT, latest - (weekNum - curWeek) * KG_PER_WEEK);
+}
+
+// Rythme reellement observe, mesure sur les 4 dernieres semaines de pesees
+function actualRatePerWeek() {
+  const w = S.weights;
+  if (!w || w.length < 2) return null;
+  const last = w[w.length-1];
+  const lastD = new Date(last.date + 'T12:00:00');
+  const winStart = new Date(lastD); winStart.setDate(winStart.getDate() - 28);
+  let ref = null;
+  for (const e of w) { if (new Date(e.date + 'T12:00:00') <= winStart) ref = e; }
+  if (!ref) ref = w[0];
+  const days = (lastD - new Date(ref.date + 'T12:00:00')) / 86400000;
+  if (days < 5) return null;
+  return (ref.val - last.val) / (days / 7);
+}
 function getWeekLabel(weekNum) {
   const d = new Date(START_DATE + 'T12:00:00');
   d.setDate(d.getDate() + weekNum * 7);
@@ -2379,8 +2455,11 @@ function renderControl() {
   const el = document.getElementById('controlContent');
   const currentWeek = getWeekNumber(TODAY);
   const weights = S.weights;
+  const kgLeftNow = (weights.length ? weights[weights.length-1].val : START_WEIGHT) - GOAL_WEIGHT_DEFAULT;
+  const weeksLeft = kgLeftNow > 0 ? Math.ceil(projectionDays() / 7) : 0;
+  const totalWeeks = currentWeek + weeksLeft;
   const rows = [];
-  for (let w = 0; w <= Math.max(currentWeek, WEEKS_TOTAL); w++) {
+  for (let w = 0; w <= totalWeeks; w++) {
     const theoretical = parseFloat(getTheoreticalWeight(w).toFixed(1));
     const [sy, sm, sd] = START_DATE.split('-').map(Number);
     const weekStart = new Date(sy, sm-1, sd); weekStart.setDate(weekStart.getDate() + w * 7);
@@ -2401,25 +2480,35 @@ function renderControl() {
     rows.push({ w, theoretical, actual, isPast, isCurrent, isFuture });
   }
   const latestWeight = weights.length ? weights[weights.length - 1].val : START_WEIGHT;
-  const theoreticalNow = parseFloat(getTheoreticalWeight(currentWeek).toFixed(1));
-  const gap = parseFloat((latestWeight - theoreticalNow).toFixed(1));
-  const onTrack = gap <= 0.5;
-  const ahead = gap < -0.5;
+  const kgLeft = kgLeftNow;
+  const targetRate = KG_PER_WEEK;
+  const realRate = actualRatePerWeek();
+  const g = v => (v >= 0 ? '' : '−') + Math.round(Math.abs(v) * 1000) + ' g';
   let statusEmoji, statusColor, statusTitle, statusMsg;
-  if (ahead) { statusEmoji='🚀'; statusColor='var(--accent)'; statusTitle='EN AVANCE'; statusMsg=`Tu es <strong>${Math.abs(gap)} kg en avance</strong> sur le plan. Excellent travail, continue !`; }
-  else if (onTrack) { statusEmoji='✅'; statusColor='var(--green)'; statusTitle='DANS LES CLOUS'; statusMsg=`Tu es <strong>exactement où tu devrais être</strong>. Objectif théorique : ${theoreticalNow} kg, tu es à ${latestWeight} kg.`; }
-  else if (gap <= 1.5) { statusEmoji='⚠️'; statusColor='var(--accent2)'; statusTitle='LÉGER RETARD'; statusMsg=`Tu es <strong>${gap} kg en retard</strong> sur le plan (objectif : ${theoreticalNow} kg). Resserre l'alimentation cette semaine.`; }
-  else { statusEmoji='🔴'; statusColor='var(--red)'; statusTitle='RETARD IMPORTANT'; statusMsg=`Tu es <strong>${gap} kg en retard</strong> sur le plan. Objectif : ${theoreticalNow} kg, tu es à ${latestWeight} kg.`; }
-  const weeksLeft = WEEKS_TOTAL - currentWeek;
-  const kgLeft = latestWeight - GOAL_WEIGHT_DEFAULT;
-  const neededPerWeek = weeksLeft > 0 ? (kgLeft / weeksLeft).toFixed(1) : '—';
+  if (kgLeft <= 0) {
+    statusEmoji='🏆'; statusColor='var(--accent)'; statusTitle='OBJECTIF ATTEINT';
+    statusMsg=`Tu es à <strong>${latestWeight} kg</strong>, sous ton objectif de ${GOAL_WEIGHT_DEFAULT} kg. Passe en maintien si tu veux t'y stabiliser.`;
+  } else if (realRate === null) {
+    statusEmoji='⏳'; statusColor='var(--blue)'; statusTitle='EN ATTENTE DE DONNÉES';
+    statusMsg=`Avec un déficit de <strong>−${TARGET_DEFICIT} kcal/jour</strong>, le rythme visé est de <strong>${g(targetRate)}/semaine</strong>. Enregistre au moins deux pesées espacées d'une semaine pour que je puisse comparer.`;
+  } else {
+    const ratio = targetRate > 0 ? realRate / targetRate : 0;
+    const cmp = `Rythme visé <strong>${g(targetRate)}/sem</strong>, rythme réel <strong>${g(realRate)}/sem</strong> sur les 4 dernières semaines.`;
+    if (ratio >= 1.15) { statusEmoji='🚀'; statusColor='var(--accent)'; statusTitle='PLUS RAPIDE QUE PRÉVU'; statusMsg=`${cmp} Tu descends plus vite que ton déficit ne le prévoit. Si c'est trop rapide, remonte un peu ton budget calorique.`; }
+    else if (ratio >= 0.85) { statusEmoji='✅'; statusColor='var(--green)'; statusTitle='DANS LES CLOUS'; statusMsg=`${cmp} Ton déficit tient ses promesses, il reste ${kgLeft.toFixed(1)} kg.`; }
+    else if (ratio >= 0.5) { statusEmoji='⚠️'; statusColor='var(--accent2)'; statusTitle='UN PEU LENT'; statusMsg=`${cmp} L'écart vient souvent d'un TDEE surestimé ou de portions sous-évaluées. Vérifie tes pesées d'aliments avant de creuser le déficit.`; }
+    else if (realRate > 0) { statusEmoji='🔴'; statusColor='var(--red)'; statusTitle='TROP LENT'; statusMsg=`${cmp} Ton déficit réel est nettement plus faible qu'annoncé. Réajuste ton TDEE dans les réglages plutôt que de couper davantage.`; }
+    else { statusEmoji='🔴'; statusColor='var(--red)'; statusTitle='STAGNATION'; statusMsg=`${cmp} Ton poids ne descend plus. Revois ton TDEE, il est probablement plus bas que les ${S.settings.tdee || 2300} kcal réglés.`; }
+  }
+  const neededPerWeek = targetRate.toFixed(2);
+  const realRateTxt = realRate === null ? '—' : realRate.toFixed(2);
   el.innerHTML = `
     <div style="background:var(--surface);border:1.5px solid ${statusColor};border-radius:18px;padding:18px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <span style="font-size:26px">${statusEmoji}</span>
         <div>
           <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${statusColor}">${statusTitle}</div>
-          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Semaine ${currentWeek + 1} sur ${WEEKS_TOTAL}</div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Semaine ${currentWeek + 1}${weeksLeft > 0 ? ' sur ' + (totalWeeks + 1) : ''}</div>
         </div>
       </div>
       <div style="font-size:13px;color:var(--muted2);line-height:1.7">${statusMsg}</div>
@@ -2427,15 +2516,15 @@ function renderControl() {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent2)">${neededPerWeek}</div>
-        <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg/sem requis</div>
+        <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg/sem visé</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--green)">${realRateTxt}</div>
+        <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg/sem réel</div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--blue)">${weeksLeft}</div>
         <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">semaines restantes</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent)">${kgLeft.toFixed(1)}</div>
-        <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg à perdre</div>
       </div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;">
@@ -2512,16 +2601,24 @@ function renderProjections() {
   const latest = S.weights.length ? S.weights[S.weights.length-1].val : START_WEIGHT;
   const today = new Date();
   const months = ['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
-  const targets = [100, 95, 90, 85];
-  const emojis = {100:'💪', 95:'🔥', 90:'⚡', 85:'🏆'};
-  const labels = {100:'Sous les 100 kg', 95:'Sous les 95 kg', 90:'Sous les 90 kg', 85:'Objectif final — 85 kg !'};
+  // Paliers generes automatiquement : tous les 5 kg jusqu'a l'objectif
+  const goalW = GOAL_WEIGHT_DEFAULT;
+  const targets = [];
+  for (let t = Math.floor((latest - 0.1) / 5) * 5; t > goalW; t -= 5) targets.push(t);
+  targets.push(goalW);
+  const stepEmojis = ['💪', '🔥', '⚡', '✨', '🎯'];
+  const emojis = {}, labels = {};
+  targets.forEach((t, i) => {
+    emojis[t] = t === goalW ? '🏆' : stepEmojis[i % stepEmojis.length];
+    labels[t] = t === goalW ? `Objectif final — ${goalW} kg !` : `Sous les ${t} kg`;
+  });
   const perWeek = KG_PER_WEEK > 0 ? KG_PER_WEEK : 1.0;
   const milestones = targets.filter(t => t < latest).map(target => {
     const kgToLose = latest - target;
     const weeksNeeded = Math.max(1, Math.round(kgToLose / perWeek));
     const date = new Date(today);
     date.setDate(today.getDate() + weeksNeeded * 7);
-    return {target, weeksNeeded, date, isGoal: target === 85};
+    return {target, weeksNeeded, date, isGoal: target === goalW};
   });
   if (!milestones.length) { el.innerHTML = '<div style="color:var(--muted2);font-size:13px;">Tu as atteint tous les paliers 🏆</div>'; return; }
   el.innerHTML = milestones.map((m, i) => {
@@ -2741,122 +2838,10 @@ function renderMuscu() {
   }).join('');
 }
 
-// ===== SETUP =====
-let setupSex = 'M';
-let setupActivity = 1.2;
-
-function showSetup() {
-  document.getElementById('setupOverlay').style.display = 'block';
-  document.getElementById('app-container').style.display = 'none';
-}
-
-function selectSetupSex(sex) {
-  setupSex = sex;
-  document.getElementById('setupSexM').style.cssText = sex === 'M'
-    ? 'padding:14px;border-radius:12px;border:1.5px solid var(--accent);background:rgba(24,194,156,0.08);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);'
-    : 'padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;font-weight:600;color:var(--muted2);';
-  document.getElementById('setupSexF').style.cssText = sex === 'F'
-    ? 'padding:14px;border-radius:12px;border:1.5px solid var(--accent);background:rgba(24,194,156,0.08);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);'
-    : 'padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;font-weight:600;color:var(--muted2);';
-  updateSetupPreview();
-}
-
-function selectSetupActivity(val, emoji, name, desc) {
-  setupActivity = val;
-  document.querySelectorAll('.setup-activity-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('act-' + val).classList.add('active');
-  updateSetupPreview();
-}
-
+// ===== ESTIMATION TDEE (Mifflin-St Jeor), utilisee par les reglages =====
 function calcMifflin(sex, weight, height, age) {
-  // Mifflin-St Jeor BMR
   if (sex === 'M') return 10 * weight + 6.25 * height - 5 * age + 5;
   return 10 * weight + 6.25 * height - 5 * age - 161;
-}
-
-function updateSetupPreview() {
-  const name = document.getElementById('setupName').value.trim();
-  const age = parseInt(document.getElementById('setupAge').value);
-  const height = parseInt(document.getElementById('setupHeight').value);
-  const weight = parseFloat(document.getElementById('setupWeight').value);
-  const goal = parseFloat(document.getElementById('setupGoal').value);
-  const btn = document.getElementById('setupBtn');
-  const preview = document.getElementById('setupPreview');
-
-  if (!name || !age || !height || !weight || !goal || weight <= goal) {
-    btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none';
-    preview.style.display = 'none'; return;
-  }
-
-  const bmr = calcMifflin(setupSex, weight, height, age);
-  const tdee = Math.round(bmr * setupActivity);
-  const deficit = 1100;
-  const maxCal = Math.max(1000, tdee - deficit);
-  const protTarget = Math.round(weight * 1.8); // 1.8g/kg
-  const kgToLose = weight - goal;
-  const kgPerWeek = (deficit * 7) / 7700;
-  const weeksNeeded = Math.ceil(kgToLose / kgPerWeek);
-
-  preview.style.display = 'block';
-  document.getElementById('setupPreviewContent').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--accent2);">${tdee}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">kcal dépensées/jour</div>
-      </div>
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--accent);">${maxCal}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">kcal à manger/jour</div>
-      </div>
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--blue);">${protTarget}g</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">protéines/jour</div>
-      </div>
-      <div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center;">
-        <div style="font-size:22px;font-weight:700;color:var(--text);">${weeksNeeded}</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:2px;">semaines estimées</div>
-      </div>
-    </div>
-    <div style="font-size:11px;color:var(--muted2);line-height:1.6;">
-      Déficit de <strong style="color:var(--accent2)">−${deficit} kcal/jour</strong> · 
-      Perte ~<strong style="color:var(--accent)">${kgPerWeek.toFixed(1)} kg/semaine</strong>
-    </div>`;
-
-  // Store computed values for finishSetup
-  window._setupComputed = { tdee, maxCal, protTarget, kgToLose, weeksNeeded, deficit };
-  btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
-}
-
-function finishSetup() {
-  const name = document.getElementById('setupName').value.trim();
-  const age = parseInt(document.getElementById('setupAge').value);
-  const height = parseInt(document.getElementById('setupHeight').value);
-  const weight = parseFloat(document.getElementById('setupWeight').value);
-  const goal = parseFloat(document.getElementById('setupGoal').value);
-  const c = window._setupComputed;
-  if (!name || !c) return;
-
-  // DOC_ID est fixe pour cette app, il ne depend ni du nom ni de l'appareil
-  const docId = DOC_ID;
-
-  S.profile = {
-    firstName: name, docId,
-    startDate: TODAY, startWeight: weight,
-    goalWeight: goal, sex: setupSex,
-    age, height, activity: setupActivity
-  };
-  S.settings = { tdee: c.tdee, maxCal: c.maxCal, protTarget: c.protTarget, goalWeight: goal };
-  S.weights = [{ date: TODAY, val: weight }];
-
-  localStorage.setItem(STORAGE_NS + '_user', docId);
-  save();
-  computeConstants();
-  connectFirebase().then(save); // connexion cloud immédiate pour un profil tout neuf
-
-  document.getElementById('setupOverlay').style.display = 'none';
-  document.getElementById('app-container').style.display = '';
-  init();
-  showToast('Bienvenue ' + name + ' ! 🎉');
 }
 
 function toggleMuscle(muscleId) {
@@ -2953,10 +2938,17 @@ function saveSettings() {
   S.settings.maxCal = maxCal;
   S.settings.protTarget = parseInt(document.getElementById('sProt').value) || 185;
   S.settings.goalWeight = parseFloat(document.getElementById('sGoal').value) || 85;
-  if (S.profile) S.profile.goalWeight = S.settings.goalWeight;
+  if (!S.profile) S.profile = defaultProfile();
+  S.profile.goalWeight = S.settings.goalWeight;
+  const sw = parseFloat(document.getElementById('sStartWeight').value);
+  if (sw) S.profile.startWeight = sw;
+  const sd = document.getElementById('sStartDate').value;
+  if (sd) S.profile.startDate = sd;
+  const fn = document.getElementById('sFirstName').value.trim();
+  if (fn) S.profile.firstName = fn;
   save();
   computeConstants();
-  loadSettings(); updateMacros(); updateHeader();
+  loadSettings(); updateMacros(); updateHeader(); applyProfileName();
   renderToday(); renderWeek(); renderPoids(); renderControl();
   showToast('Objectifs enregistrés ✓');
 }
@@ -3916,76 +3908,6 @@ loadState();
         <div id="musclePastDayTitle" style="font-size:13px;font-weight:700;color:var(--text);"></div>
       </div>
       <div id="musclePastMuscleGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- SETUP SCREEN -->
-<div id="setupOverlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;overflow-y:auto;padding:24px 20px 48px;">
-  <div style="max-width:430px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:32px;padding-top:20px;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:6px;color:var(--text);">BIENVENUE</div>
-      <div style="font-size:14px;color:var(--muted2);margin-top:8px;">Crée ton profil pour commencer</div>
-    </div>
-
-    <!-- Step 1: Identity -->
-    <div id="setupStep1">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">👤 Identité</div>
-        <div class="form-group">
-          <label>Prénom</label>
-          <input class="form-input" id="setupName" placeholder="Ex: Tania" oninput="updateSetupPreview()">
-        </div>
-        <div class="form-group">
-          <label>Sexe</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div id="setupSexM" onclick="selectSetupSex('M')" style="padding:14px;border-radius:12px;border:1.5px solid var(--accent);background:rgba(24,194,156,0.08);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);">♂ Homme</div>
-            <div id="setupSexF" onclick="selectSetupSex('F')" style="padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;font-weight:600;color:var(--muted2);">♀ Femme</div>
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-group"><label>Âge</label><input class="form-input" id="setupAge" type="number" placeholder="23" oninput="updateSetupPreview()"></div>
-          <div class="form-group"><label>Taille (cm)</label><input class="form-input" id="setupHeight" type="number" placeholder="175" oninput="updateSetupPreview()"></div>
-        </div>
-      </div>
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">⚖️ Poids</div>
-        <div class="form-grid">
-          <div class="form-group"><label>Poids actuel (kg)</label><input class="form-input" id="setupWeight" type="number" step="0.1" placeholder="70.0" oninput="updateSetupPreview()"></div>
-          <div class="form-group"><label>Objectif (kg)</label><input class="form-input" id="setupGoal" type="number" step="0.1" placeholder="60.0" oninput="updateSetupPreview()"></div>
-        </div>
-      </div>
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;">🏃 Activité physique</div>
-        <div style="display:flex;flex-direction:column;gap:8px;" id="setupActivityList">
-          <div onclick="selectSetupActivity(1.2,'🛋️','Sédentaire','Peu ou pas de sport')" class="setup-activity-item active" id="act-1.2">
-            <div style="font-size:20px;">🛋️</div>
-            <div><div style="font-size:13px;font-weight:600;">Sédentaire</div><div style="font-size:11px;color:var(--muted2);">Peu ou pas de sport</div></div>
-          </div>
-          <div onclick="selectSetupActivity(1.375,'🚶','Légèrement actif','1–3 fois/semaine')" class="setup-activity-item" id="act-1.375">
-            <div style="font-size:20px;">🚶</div>
-            <div><div style="font-size:13px;font-weight:600;">Légèrement actif</div><div style="font-size:11px;color:var(--muted2);">1–3 fois/semaine</div></div>
-          </div>
-          <div onclick="selectSetupActivity(1.55,'🏋️','Modérément actif','3–5 fois/semaine')" class="setup-activity-item" id="act-1.55">
-            <div style="font-size:20px;">🏋️</div>
-            <div><div style="font-size:13px;font-weight:600;">Modérément actif</div><div style="font-size:11px;color:var(--muted2);">3–5 fois/semaine</div></div>
-          </div>
-          <div onclick="selectSetupActivity(1.725,'🔥','Très actif','6–7 fois/semaine')" class="setup-activity-item" id="act-1.725">
-            <div style="font-size:20px;">🔥</div>
-            <div><div style="font-size:13px;font-weight:600;">Très actif</div><div style="font-size:11px;color:var(--muted2);">6–7 fois/semaine</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Preview card -->
-      <div id="setupPreview" style="display:none;background:var(--surface);border:1.5px solid var(--accent);border-radius:20px;padding:20px;margin-bottom:20px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">📊 Ton plan calculé</div>
-        <div id="setupPreviewContent"></div>
-      </div>
-
-      <button onclick="finishSetup()" class="btn-confirm" id="setupBtn" style="opacity:0.4;pointer-events:none;">Créer mon profil</button>
     </div>
   </div>
 </div>

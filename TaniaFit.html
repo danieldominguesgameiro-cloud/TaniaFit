@@ -532,9 +532,17 @@ body.light-theme .bottom-nav { background: rgba(39,29,57,0.85); border-color: rg
 .accordion-body.open { max-height:440px; overflow-y:auto; padding-bottom:16px; }
 .settings-title { font-size:13px; font-weight:800; letter-spacing:0.2px; color:var(--coral); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
 .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-bottom:18px; }
+/* Sans min-width:0, un champ date impose sa largeur intrinseque et
+   deborde de sa colonne de grille en poussant le voisin. */
+.settings-field { min-width:0; }
 .settings-field label { font-size:9.5px; color:var(--muted2); letter-spacing:0.4px; text-transform:uppercase; display:block; margin-bottom:7px; font-weight:700; }
-.settings-input { width:100%; background:var(--surface2); border:2px solid transparent; border-radius:15px; padding:13px; color:var(--text); font-family:var(--font-display); font-weight:800; font-size:24px; text-align:center; outline:none; transition:border-color 0.2s; }
-.settings-input:focus { border-color:var(--mint); }
+.settings-input { width:100%; min-width:0; max-width:100%; background:var(--surface2); border:2px solid transparent; border-radius:15px; padding:13px 10px; color:var(--text); font-family:var(--font-display); font-weight:800; font-size:24px; text-align:center; outline:none; transition:border-color 0.2s; }
+/* Date et texte : contenu bien plus long qu'un nombre, donc corps reduit */
+.settings-input[type="date"], .settings-input[type="text"] {
+  font-size:15px; font-weight:700; padding:16px 8px;
+  -webkit-appearance:none; appearance:none;
+}
+.settings-input:focus { border-color:var(--accent); }
 .btn-save-settings { width:100%; background:var(--grad-sunset); color:#fff; border:none; font-family:var(--font-body); font-size:14px; font-weight:800; letter-spacing:0.2px; padding:15px; border-radius:15px; cursor:pointer; transition:all 0.2s; box-shadow:0 8px 20px -6px rgba(255,94,91,0.55); }
 .btn-save-settings:active { transform:scale(0.98); }
 
@@ -1079,7 +1087,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     </div>
 
     <div style="text-align:center;font-size:10px;color:var(--muted2);padding:6px 0 4px;letter-spacing:0.5px;">
-      version <strong id="appVersion">v13 · thème neutre · 31-08-2026</strong>
+      version <strong id="appVersion">v14 · thème neutre · 31-08-2026</strong>
     </div>
   </div>
 

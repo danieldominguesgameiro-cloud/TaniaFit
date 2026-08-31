@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" id="themeColor" content="#f5c870">
+<meta name="theme-color" id="themeColor" content="#f7f7f5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>TANIA FIT</title>
+<title>GO TO SUMMER BODY</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script>
 const IS_IFRAME = (() => { try { return window.self !== window.top; } catch(e) { return true; } })();
 window._firebaseReady = IS_IFRAME ? Promise.resolve() : (async () => {
@@ -43,105 +43,128 @@ window._firebaseReady = IS_IFRAME ? Promise.resolve() : (async () => {
   --pink-rgb: 255,110,199;
 
   /* Semantic mapping (keeps JS happy) */
-  --accent: #18c29c;          /* protéines - mint */
-  --accent-rgb: 24,194,156;
-  --accent-dim: rgba(24,194,156,0.14);
-  --accent2: #ff7a3d;         /* calories - tangerine/coral */
-  --accent2-rgb: 255,122,61;
-  --accent2-dim: rgba(255,122,61,0.14);
-  --blue: #2ec5e8;            /* déficit - aqua */
-  --blue-rgb: 46,197,232;
-  --blue-dim: rgba(46,197,232,0.14);
-  --purple: #7b6cf6;
-  --green: #18c29c;
-  --red: #ff5e5b;
+  --accent: #4a7c62;          /* protéines - vert sauge */
+  --accent-rgb: 74,124,98;
+  --accent-dim: rgba(74,124,98,0.12);
+  --accent2: #b8763a;         /* calories - terre cuite */
+  --accent2-rgb: 184,118,58;
+  --accent2-dim: rgba(184,118,58,0.12);
+  --blue: #4f6d8f;            /* déficit / glucides - bleu ardoise */
+  --blue-rgb: 79,109,143;
+  --blue-dim: rgba(79,109,143,0.12);
+  --purple: #7a6a8a;          /* lipides - prune sourd */
+  --green: #4a7c62;
+  --red: #a8524a;
 
-  /* Surfaces — warm cream, airy */
-  --bg: #fff6ec;
-  --bg-grad: linear-gradient(180deg, #fff1f0 0%, #fff6ec 30%, #f3fbf6 100%);
+  /* Surfaces — blanc cassé, gris chauds, aucun effet vitre */
+  --bg: #f7f7f5;
+  --bg-grad: linear-gradient(180deg, #fbfbfa 0%, #f6f6f4 100%);
   --surface: #ffffff;
-  --surface2: #fff4ea;
-  --surface3: #ffeede;
-  --border: rgba(60,40,30,0.07);
-  --border2: rgba(60,40,30,0.13);
-  --hairline: rgba(60,40,30,0.06);
+  --surface2: #f2f2ef;
+  --surface3: #e8e8e4;
+  --border: rgba(24,28,26,0.08);
+  --border2: rgba(24,28,26,0.15);
+  --hairline: rgba(24,28,26,0.06);
 
-  --text: #2b2330;
-  --text2: #6a6172;
-  --muted: #d8cec5;
-  --muted2: #9a8f9d;
+  --text: #1c211f;
+  --text2: #4d5654;
+  --muted: #c9cdc9;
+  --muted2: #8a918e;
 
-  --glass: rgba(255,255,255,0.5);
-  --glass2: rgba(255,255,255,0.7);
+  --glass: rgba(255,255,255,0.7);
+  --glass2: rgba(255,255,255,0.9);
 
-  /* Liquid glass cards (frosted, see beach through) */
-  --card-glass: rgba(255,255,255,0.55);
-  --card-glass-strong: rgba(255,255,255,0.68);
-  --card-border-glass: rgba(255,255,255,0.65);
-  --card-blur: blur(18px) saturate(160%);
-  --inner-glass: rgba(255,255,255,0.45);
+  /* Cartes pleines, plus de flou : lisibilite avant tout */
+  --card-glass: #ffffff;
+  --card-glass-strong: #ffffff;
+  --card-border-glass: rgba(24,28,26,0.09);
+  --card-blur: none;
+  --inner-glass: #f2f2ef;
 
-  /* Signature gradients */
-  --grad-sunset: linear-gradient(120deg, #ff5e5b 0%, #ff8c42 45%, #ffc845 100%);
-  --grad-sunset-soft: linear-gradient(120deg, #ff7a6b 0%, #ffa05a 55%, #ffce6b 100%);
-  --grad-tropic: linear-gradient(120deg, #18c29c 0%, #2ec5e8 100%);
-  --grad-candy: linear-gradient(120deg, #7b6cf6 0%, #ff6ec7 100%);
-  --grad-mango: linear-gradient(120deg, #ff8c42 0%, #ffc845 100%);
+  /* Degrades sobres, un seul ton par usage */
+  --grad-sunset: linear-gradient(135deg, #3d5a4c 0%, #567a66 100%);
+  --grad-sunset-soft: linear-gradient(135deg, #4a6b5b 0%, #6a8f79 100%);
+  --grad-tropic: linear-gradient(135deg, #4a7c62 0%, #6a9c7e 100%);
+  --grad-candy: linear-gradient(135deg, #5a6b8c 0%, #7d8fae 100%);
+  --grad-mango: linear-gradient(135deg, #b07d42 0%, #c9a15f 100%);
 
-  --header-bg: linear-gradient(125deg, #ff5e5b 0%, #ff7a3d 40%, #ffb13d 100%);
+  --header-bg: linear-gradient(135deg, #2f4539 0%, #46614f 55%, #5d7a66 100%);
   --header-border: transparent;
 
-  --shadow-sm: 0 2px 6px rgba(120,80,60,0.08);
-  --shadow-card: 0 8px 22px -10px rgba(120,80,60,0.22);
-  --shadow-pop: 0 12px 30px -8px rgba(255,122,61,0.4);
-  --shadow-lg: 0 24px 60px -18px rgba(90,60,80,0.4);
+  --shadow-sm: 0 1px 3px rgba(24,28,26,0.06);
+  --shadow-card: 0 4px 16px -8px rgba(24,28,26,0.16);
+  --shadow-pop: 0 6px 18px -8px rgba(61,90,76,0.35);
+  --shadow-lg: 0 20px 50px -20px rgba(24,28,26,0.35);
 
-  --radius: 26px;
-  --radius-sm: 18px;
-  --radius-lg: 34px;
+  --radius: 18px;
+  --radius-sm: 14px;
+  --radius-lg: 22px;
 
-  --font-display: 'Baloo 2', 'Geist', sans-serif;
+  --font-display: 'Inter', 'Geist', sans-serif;
   --font-body: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-num: 'Baloo 2', sans-serif;
+  --font-num: 'Inter', sans-serif;
 }
 
 /* Dark theme = a warm "night sunset" variant (toggle still works, but optional) */
 body.light-theme {
-  --bg: #1a1424;
-  --bg-grad: linear-gradient(180deg, #241733 0%, #1a1424 45%, #14202a 100%);
-  --surface: #271d39;
-  --surface2: #2f2444;
-  --surface3: #3a2d52;
+  --bg: #14171a;
+  --bg-grad: linear-gradient(180deg, #181c1f 0%, #131619 100%);
+  --surface: #1e2226;
+  --surface2: #262b30;
+  --surface3: #31373d;
   --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.15);
+  --border2: rgba(255,255,255,0.16);
   --hairline: rgba(255,255,255,0.06);
-  --text: #fdf3ff;
-  --text2: #c8bcd6;
-  --muted: #5a4d6e;
-  --muted2: #9a8cae;
-  --glass: rgba(255,255,255,0.06);
-  --glass2: rgba(255,255,255,0.1);
-  --card-glass: rgba(30,22,46,0.52);
-  --card-glass-strong: rgba(30,22,46,0.66);
-  --card-border-glass: rgba(255,255,255,0.16);
-  --card-blur: blur(18px) saturate(150%);
-  --inner-glass: rgba(255,255,255,0.08);
-  --shadow-sm: 0 2px 6px rgba(0,0,0,0.3);
-  --shadow-card: 0 8px 22px -10px rgba(0,0,0,0.5);
-  --shadow-lg: 0 24px 60px -18px rgba(0,0,0,0.7);
+  --text: #eef1f0;
+  --text2: #b3bbb8;
+  --muted: #4b5359;
+  --muted2: #8b9490;
+  --glass: rgba(255,255,255,0.05);
+  --glass2: rgba(255,255,255,0.09);
+  --card-glass: #1e2226;
+  --card-glass-strong: #242a2f;
+  --card-border-glass: rgba(255,255,255,0.09);
+  --card-blur: none;
+  --inner-glass: #262b30;
+
+  --accent: #6fae8c;
+  --accent-rgb: 111,174,140;
+  --accent-dim: rgba(111,174,140,0.15);
+  --accent2: #d59355;
+  --accent2-rgb: 213,147,85;
+  --accent2-dim: rgba(213,147,85,0.15);
+  --blue: #7295bb;
+  --blue-rgb: 114,149,187;
+  --blue-dim: rgba(114,149,187,0.15);
+  --purple: #9d8bb0;
+  --green: #6fae8c;
+  --red: #cf7168;
+
+  --grad-sunset: linear-gradient(135deg, #2c4136 0%, #3f5a4a 100%);
+  --grad-sunset-soft: linear-gradient(135deg, #354d40 0%, #4a6857 100%);
+  --grad-tropic: linear-gradient(135deg, #35604a 0%, #4a7c62 100%);
+  --grad-candy: linear-gradient(135deg, #3d4a60 0%, #55668a 100%);
+  --grad-mango: linear-gradient(135deg, #7d5730 0%, #a37a45 100%);
+  --header-bg: linear-gradient(135deg, #1f2e26 0%, #2c4136 55%, #3a5546 100%);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-card: 0 4px 16px -8px rgba(0,0,0,0.6);
+  --shadow-pop: 0 6px 18px -8px rgba(0,0,0,0.6);
+  --shadow-lg: 0 20px 50px -20px rgba(0,0,0,0.8);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 html {
-  background: #f5c870;              /* = stop 1 du degrade "sand", bas du SVG */
+  background: #f7f7f5;              /* = --bg, mis a jour par loadTheme() */
   height:100%; width:100%;
   overscroll-behavior: none;        /* supprime le rebond elastique iOS */
   transition: background-color 0.4s ease;
 }
 
 body {
-  background: #f5c870;
+  background: var(--bg);
+  background-image: var(--bg-grad);
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -153,41 +176,6 @@ body {
 }
 
 /* ===== BEACH SCENE BACKGROUND (SVG, rich cartoon) ===== */
-#beach-bg {
-  /* Doit couvrir l'ecran ENTIER, encoche et barre d'accueil comprises,
-     et deborder sous les barres Safari qui se retractent au scroll. */
-  position: fixed;
-  left: -40px; right: -40px;
-  top: -80px;      /* deborde sous l'encoche, qui est dans le viewport */
-  bottom: 0;       /* s'arrete pile au bas du viewport : le dernier pixel du
-                      SVG vaut #f5c870, identique au canevas qui peint la bande */
-  z-index: 0; overflow: hidden; pointer-events: none;
-  /* Repli degrade ciel vers sable, au cas ou le SVG ne remplirait pas */
-  background: linear-gradient(180deg, #3fb8e8 0%, #bdeef7 32%, #2fc3d6 48%, #ffeebb 58%, #f5c870 100%);
-}
-#beach-bg svg.beach-svg {
-  position:absolute; inset:0; width:100%; height:100%;
-  display:block;
-}
-/* parallax-y floating bits handled inside SVG via CSS classes */
-.bsun { transform-origin:center; animation: floaty 7s ease-in-out infinite; }
-.bcloud-a { animation: drift1 60s linear infinite; }
-.bcloud-b { animation: drift2 80s linear infinite; }
-.bpalm-left { transform-origin: 70px 470px; animation: sway 6s ease-in-out infinite; }
-.bpalm-right { transform-origin: 600px 430px; animation: sway2 7s ease-in-out infinite; }
-.bbird { animation: floaty 5s ease-in-out infinite; }
-.bboat { animation: boatsail 18s ease-in-out infinite, boattilt 4s ease-in-out infinite; transform-origin:center; }
-.bwave-shimmer { animation: shimmerline 6s ease-in-out infinite; }
-@keyframes drift1 { from{transform:translateX(-160px)} to{transform:translateX(900px)} }
-@keyframes drift2 { from{transform:translateX(-120px)} to{transform:translateX(820px)} }
-@keyframes sway  { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(2deg)} }
-@keyframes sway2 { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-2.2deg)} }
-@keyframes boatsail { 0%{transform:translateX(0)} 50%{transform:translateX(120px)} 100%{transform:translateX(0)} }
-@keyframes boattilt { 0%,100%{transform:rotate(-2deg) translateY(0)} 50%{transform:rotate(2deg) translateY(-3px)} }
-@keyframes shimmerline { 0%,100%{opacity:0.5} 50%{opacity:0.9} }
-
-/* Beach stays visible on every theme */
-body.light-theme #beach-bg { display:block; }
 
 #app-container {
   background: transparent;
@@ -385,6 +373,28 @@ body.light-theme .bottom-nav { background: rgba(39,29,57,0.85); border-color: rg
 .act-mode-row { display:flex; gap:7px; margin-bottom:14px; background:var(--surface2); padding:4px; border-radius:14px; }
 .act-mode-btn { flex:1; padding:9px 6px; border:none; border-radius:11px; background:transparent; color:var(--muted2); font-family:var(--font-body); font-size:12.5px; font-weight:700; cursor:pointer; transition:all 0.2s; }
 .act-mode-btn.active { background:var(--surface); color:var(--text); box-shadow:var(--shadow-sm); }
+.macro-detail-card {
+  background: var(--card-glass); backdrop-filter: var(--card-blur); -webkit-backdrop-filter: var(--card-blur);
+  border:1px solid var(--card-border-glass); border-radius: var(--radius-sm);
+  padding:15px 16px; margin-bottom:12px; box-shadow: var(--shadow-sm);
+}
+/* Triple anneau : protéines à l'extérieur, glucides au milieu, lipides au centre */
+.ring-wrap-tri { margin-bottom:8px; }
+.ring-bg-m { stroke-width:4.5; }
+.ring-bg-s { stroke-width:4; }
+.ring-fg-m { stroke-width:4.5; }
+.ring-fg-s { stroke-width:4; }
+.macro-legend { display:flex; flex-direction:column; gap:2.5px; padding:0 2px; }
+.ml-row { display:flex; align-items:center; gap:3.5px; font-size:10px; line-height:1.25; }
+.ml-dot { width:5px; height:5px; border-radius:99px; flex:none; }
+.ml-k { color:var(--muted2); font-weight:800; width:7px; text-align:left; }
+.ml-v { font-weight:800; color:var(--text); margin-left:auto; }
+.ml-t { color:var(--muted2); font-weight:600; }
+.macro-bar-row { margin-bottom:11px; }
+.macro-bar-row:last-child { margin-bottom:0; }
+.macro-bar-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; font-size:11.5px; }
+.macro-bar-track { height:7px; background:var(--surface3); border-radius:99px; overflow:hidden; }
+.macro-bar-fill { height:100%; border-radius:99px; transition:width 0.5s ease; }
 .steps-row { display:flex; gap:10px; }
 .steps-input {
   flex:1; background: var(--surface2); border:2px solid transparent; border-radius:15px; padding:13px; color:var(--text);
@@ -647,191 +657,6 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
 </style>
 </head>
 <body>
-<div id="beach-bg">
-<svg class="beach-svg" viewBox="0 0 720 1280" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3fb8e8"/>
-      <stop offset="0.45" stop-color="#7fd6ee"/>
-      <stop offset="0.72" stop-color="#bdeef7"/>
-      <stop offset="1" stop-color="#e6f9fb"/>
-    </linearGradient>
-    <radialGradient id="sunG" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="#fffef0"/>
-      <stop offset="0.5" stop-color="#fff0a8"/>
-      <stop offset="1" stop-color="#ffdf6b" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="sunCore" cx="45%" cy="40%" r="60%">
-      <stop offset="0" stop-color="#fffdf2"/>
-      <stop offset="0.6" stop-color="#ffe87a"/>
-      <stop offset="1" stop-color="#ffce3d"/>
-    </radialGradient>
-    <linearGradient id="seaFar" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1f9fd6"/>
-      <stop offset="1" stop-color="#2bb6d8"/>
-    </linearGradient>
-    <linearGradient id="seaNear" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#23b3d6"/>
-      <stop offset="0.5" stop-color="#3fcad8"/>
-      <stop offset="1" stop-color="#6fe0d4"/>
-    </linearGradient>
-    <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffeebb"/>
-      <stop offset="0.4" stop-color="#ffdf93"/>
-      <stop offset="1" stop-color="#f5c870"/>
-    </linearGradient>
-    <linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#8fb9c9"/>
-      <stop offset="1" stop-color="#aacdda"/>
-    </linearGradient>
-    <linearGradient id="trunkG" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#6e451f"/>
-      <stop offset="0.5" stop-color="#a9763e"/>
-      <stop offset="1" stop-color="#7a5026"/>
-    </linearGradient>
-    <linearGradient id="frondG" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0f8f4d"/>
-      <stop offset="0.55" stop-color="#28b765"/>
-      <stop offset="1" stop-color="#5fd886"/>
-    </linearGradient>
-    <linearGradient id="frondG2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0c7d44"/>
-      <stop offset="1" stop-color="#3cc06f"/>
-    </linearGradient>
-  </defs>
-
-  <!-- SKY -->
-  <rect x="0" y="0" width="720" height="780" fill="url(#sky)"/>
-
-  <!-- SUN glow + core -->
-  <g class="bsun">
-    <circle cx="560" cy="150" r="150" fill="url(#sunG)"/>
-    <circle cx="560" cy="150" r="58" fill="url(#sunCore)"/>
-  </g>
-
-  <!-- CLOUDS -->
-  <g class="bcloud-a" opacity="0.95" fill="#ffffff">
-    <ellipse cx="120" cy="150" rx="70" ry="34"/>
-    <ellipse cx="170" cy="128" rx="54" ry="40"/>
-    <ellipse cx="80" cy="132" rx="44" ry="32"/>
-    <rect x="60" y="150" width="150" height="34" rx="17"/>
-  </g>
-  <g class="bcloud-b" opacity="0.8" fill="#ffffff">
-    <ellipse cx="470" cy="250" rx="55" ry="26"/>
-    <ellipse cx="510" cy="234" rx="42" ry="30"/>
-    <rect x="425" y="250" width="120" height="26" rx="13"/>
-  </g>
-
-  <!-- DISTANT MOUNTAINS -->
-  <g opacity="0.85">
-    <path d="M0 470 Q70 400 140 440 Q200 470 260 450 L260 480 L0 480 Z" fill="url(#mtn)"/>
-    <path d="M470 460 Q540 395 600 435 Q660 465 720 448 L720 480 L470 480 Z" fill="url(#mtn)"/>
-  </g>
-
-  <!-- SEA -->
-  <rect x="0" y="468" width="720" height="170" fill="url(#seaFar)"/>
-  <path d="M0 560 Q180 535 360 558 Q540 580 720 552 L720 760 L0 760 Z" fill="url(#seaNear)"/>
-
-  <!-- SMALL TROPICAL ISLAND on horizon -->
-  <g opacity="0.92">
-    <ellipse cx="360" cy="474" rx="46" ry="9" fill="#e9d7a4"/>
-    <path d="M338 474 Q336 450 350 446 Q344 462 348 474 Z" fill="#7a5026"/>
-    <g fill="url(#frondG2)">
-      <path d="M348 446 Q330 436 320 442 Q336 440 350 450 Z"/>
-      <path d="M348 446 Q366 436 376 442 Q360 440 348 450 Z"/>
-      <path d="M348 444 Q344 432 350 428 Q352 438 350 448 Z"/>
-    </g>
-    <path d="M372 474 Q374 456 384 454 Q378 466 382 474 Z" fill="#7a5026"/>
-    <g fill="url(#frondG)">
-      <path d="M384 454 Q370 446 362 450 Q376 448 386 456 Z"/>
-      <path d="M384 454 Q398 446 406 450 Q392 448 384 456 Z"/>
-    </g>
-  </g>
-
-  <!-- LITTLE SAILBOAT -->
-  <g class="bboat">
-    <!-- reflection -->
-    <ellipse cx="180" cy="556" rx="34" ry="5" fill="#ffffff" opacity="0.25"/>
-    <!-- hull -->
-    <path d="M150 540 L210 540 L198 556 L162 556 Z" fill="#d2522e"/>
-    <path d="M150 540 L210 540 L206 546 L154 546 Z" fill="#e76a3f"/>
-    <!-- mast -->
-    <rect x="178" y="500" width="4" height="42" rx="2" fill="#7a5026"/>
-    <!-- sails -->
-    <path d="M180 502 L180 538 L150 538 Z" fill="#ffffff"/>
-    <path d="M184 504 L184 538 L210 538 Z" fill="#ffe7cf"/>
-    <!-- little flag -->
-    <path d="M182 500 L196 504 L182 508 Z" fill="#ff5e5b"/>
-  </g>
-
-  <!-- WAVE FOAM lines -->
-  <g fill="none" stroke="#ffffff" stroke-linecap="round" opacity="0.85">
-    <path d="M40 500 Q120 492 200 500 T360 500" stroke-width="4"/>
-    <path d="M380 512 Q470 504 560 512 T700 510" stroke-width="4"/>
-    <path class="bwave-shimmer" d="M70 540 Q170 532 280 540" stroke-width="3" opacity="0.7"/>
-    <path class="bwave-shimmer" d="M430 545 Q540 537 660 545" stroke-width="3" opacity="0.7"/>
-  </g>
-
-  <!-- SAND -->
-  <path d="M0 700 Q360 660 720 700 L720 1280 L0 1280 Z" fill="url(#sand)"/>
-  <!-- wet foam edge on shore -->
-  <path d="M0 700 Q360 660 720 700 Q360 686 0 726 Z" fill="#ffffff" opacity="0.9"/>
-  <path d="M0 726 Q200 706 380 722 Q540 736 720 712" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
-
-  <!-- subtle sand texture pebbles -->
-  <g fill="#e8b865" opacity="0.5">
-    <circle cx="120" cy="900" r="6"/><circle cx="300" cy="1020" r="5"/>
-    <circle cx="520" cy="880" r="7"/><circle cx="620" cy="1000" r="5"/>
-    <circle cx="200" cy="1120" r="6"/><circle cx="440" cy="1140" r="5"/>
-  </g>
-
-  <!-- LEFT PALM (big, foreground) -->
-  <g class="bpalm-left">
-    <path d="M70 760 Q56 620 92 500 Q104 470 84 470 Q70 600 50 760 Z" fill="url(#trunkG)"/>
-    <g stroke="#6e451f" stroke-width="2" opacity="0.4">
-      <path d="M60 720 Q72 718 82 722" fill="none"/>
-      <path d="M58 670 Q70 668 82 672" fill="none"/>
-      <path d="M62 610 Q74 608 86 612" fill="none"/>
-      <path d="M70 545 Q82 543 92 547" fill="none"/>
-    </g>
-    <circle cx="92" cy="486" r="9" fill="#5b3a1c"/>
-    <circle cx="76" cy="492" r="9" fill="#6b4423"/>
-    <!-- full curved fronds: each is a wide leaf shape -->
-    <g class="frond-set">
-      <!-- back fronds (darker) -->
-      <path d="M86 480 C20 430 -28 432 -56 470 C-18 452 26 456 70 488 C30 468 -6 478 -34 504 C8 480 52 478 86 488 Z" fill="url(#frondG2)"/>
-      <path d="M86 480 C150 426 206 430 240 466 C198 448 150 454 92 488 C140 466 184 476 214 504 C168 480 122 480 86 488 Z" fill="url(#frondG2)"/>
-      <!-- side fronds -->
-      <path d="M86 478 C28 396 -20 372 -44 380 C8 380 50 412 84 484 C42 420 4 410 -26 426 C18 408 58 426 86 486 Z" fill="url(#frondG)"/>
-      <path d="M86 478 C144 396 196 372 224 382 C172 382 128 414 90 486 C134 422 174 412 206 428 C160 408 120 428 86 486 Z" fill="url(#frondG)"/>
-      <!-- top fronds -->
-      <path d="M86 476 C70 388 36 350 6 346 C44 366 66 414 84 482 C60 404 38 372 8 380 C46 392 70 430 86 484 Z" fill="url(#frondG)"/>
-      <path d="M86 476 C104 388 140 352 170 350 C130 368 106 416 90 482 C112 406 136 374 166 384 C126 394 102 432 86 484 Z" fill="url(#frondG2)"/>
-    </g>
-  </g>
-
-  <!-- RIGHT PALM (smaller, leaning) -->
-  <g class="bpalm-right" opacity="0.96">
-    <path d="M610 700 Q628 580 600 470 Q590 446 606 448 Q620 560 632 700 Z" fill="url(#trunkG)"/>
-    <circle cx="604" cy="456" r="7" fill="#5b3a1c"/>
-    <circle cx="616" cy="460" r="7" fill="#6b4423"/>
-    <g>
-      <path d="M606 452 C672 408 720 410 748 444 C712 426 668 432 612 460 C656 440 696 450 724 476 C684 452 640 454 606 460 Z" fill="url(#frondG2)"/>
-      <path d="M606 450 C664 374 712 352 740 360 C690 360 648 392 610 460 C652 398 690 388 720 402 C676 384 638 402 606 458 Z" fill="url(#frondG)"/>
-      <path d="M606 452 C548 412 504 414 478 446 C512 430 552 436 606 460 C566 442 528 452 502 476 C540 454 580 456 606 460 Z" fill="url(#frondG)"/>
-      <path d="M606 450 C624 372 596 338 580 332 C606 360 612 408 610 458 C600 388 596 356 612 360 Z" fill="url(#frondG2)"/>
-      <path d="M606 452 C556 388 520 366 520 366 C566 392 590 420 606 460 Z" fill="url(#frondG)"/>
-    </g>
-  </g>
-
-  <!-- BIRDS (far) -->
-  <g class="bbird" stroke="#5b6b72" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55">
-    <path d="M300 200 Q312 190 324 200 Q336 190 348 200"/>
-    <path d="M380 230 Q389 223 398 230 Q407 223 416 230"/>
-  </g>
-  <rect x="0" y="1260" width="720" height="20" fill="#f5c870"/>
-</svg>
-</div>
 <div id="app-container">
 
 <div class="toast" id="toast"></div>
@@ -842,7 +667,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     <div class="header-top">
       <div class="header-row1">
         <div class="brand">
-          <div class="app-title" id="appTitle">Tania Fit</div>
+          <div class="app-title" id="appTitle">Go To Summer Body</div>
           <div class="app-subtitle" id="headerDate"></div>
         </div>
         <div class="days-badge">
@@ -909,14 +734,23 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         <div class="macro-sub">/ <span id="targCal">1200</span> budget</div>
         <div class="macro-label">Mangé / Max</div>
       </div>
-      <div class="macro-card prot">
-        <div class="ring-wrap">
-          <svg viewBox="0 0 54 54"><circle class="ring-bg" cx="27" cy="27" r="21"/><circle class="ring-fg" id="ringProt" cx="27" cy="27" r="21" stroke="var(--accent)" stroke-dasharray="131.9" stroke-dashoffset="131.9"/></svg>
-          <div class="ring-pct" id="pctProt" style="color:var(--accent)">0%</div>
+      <div class="macro-card prot" onclick="toggleMacroDetail()">
+        <div class="ring-wrap ring-wrap-tri">
+          <svg viewBox="0 0 54 54">
+            <circle class="ring-bg" cx="27" cy="27" r="21"/>
+            <circle class="ring-bg ring-bg-m" cx="27" cy="27" r="15"/>
+            <circle class="ring-bg ring-bg-s" cx="27" cy="27" r="9"/>
+            <circle class="ring-fg" id="ringProt" cx="27" cy="27" r="21" stroke="var(--accent)" stroke-dasharray="131.9" stroke-dashoffset="131.9"/>
+            <circle class="ring-fg ring-fg-m" id="ringCarb" cx="27" cy="27" r="15" stroke="var(--blue)" stroke-dasharray="94.2" stroke-dashoffset="94.2"/>
+            <circle class="ring-fg ring-fg-s" id="ringFat" cx="27" cy="27" r="9" stroke="var(--purple)" stroke-dasharray="56.5" stroke-dashoffset="56.5"/>
+          </svg>
         </div>
-        <div class="macro-val prot" id="valProt">0</div>
-        <div class="macro-sub">/ <span id="targProt">185</span>g</div>
-        <div class="macro-label">Protéines</div>
+        <div class="macro-legend">
+          <div class="ml-row"><span class="ml-dot" style="background:var(--accent)"></span><span class="ml-k">P</span><span class="ml-v" id="mlProt">0</span><span class="ml-t">/<span id="mlProtT">0</span></span></div>
+          <div class="ml-row"><span class="ml-dot" style="background:var(--blue)"></span><span class="ml-k">G</span><span class="ml-v" id="mlCarb">0</span><span class="ml-t">/<span id="mlCarbT">0</span></span></div>
+          <div class="ml-row"><span class="ml-dot" style="background:var(--purple)"></span><span class="ml-k">L</span><span class="ml-v" id="mlFat">0</span><span class="ml-t">/<span id="mlFatT">0</span></span></div>
+        </div>
+        <div class="macro-label">Macros <span id="macroChev" style="display:inline-block;transition:transform 0.25s;">▾</span></div>
       </div>
       <div class="macro-card def">
         <div class="ring-wrap">
@@ -927,6 +761,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         <div class="macro-sub" id="defSubLabel">/ 1100 objectif</div>
         <div class="macro-label">Déficit net</div>
       </div>
+    </div>
+
+    <div class="macro-detail-card" id="macroDetailCard" style="display:none;">
+      <div id="macroDetailBody"></div>
     </div>
 
     <!-- Budget bar -->
@@ -1157,6 +995,14 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
           <input class="settings-input" type="number" id="sProt" value="185">
         </div>
         <div class="settings-field">
+          <label>Glucides / jour (g)</label>
+          <input class="settings-input" type="number" id="sCarb" value="">
+        </div>
+        <div class="settings-field">
+          <label>Lipides / jour (g)</label>
+          <input class="settings-input" type="number" id="sFat" value="">
+        </div>
+        <div class="settings-field">
           <label>Poids objectif (kg)</label>
           <input class="settings-input" type="number" id="sGoal" value="85" step="0.1">
         </div>
@@ -1171,6 +1017,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         <div class="settings-field">
           <label>Prénom</label>
           <input class="settings-input" type="text" id="sFirstName" value="">
+        </div>
+        <div class="settings-field">
+          <label>Nom de l'app</label>
+          <input class="settings-input" type="text" id="sAppName" value="">
         </div>
       </div>
       <div style="font-size:11px;color:var(--muted2);line-height:1.6;margin:-4px 0 12px;">
@@ -1229,7 +1079,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
     </div>
 
     <div style="text-align:center;font-size:10px;color:var(--muted2);padding:6px 0 4px;letter-spacing:0.5px;">
-      version <strong id="appVersion">v10 · 30-08-2026</strong>
+      version <strong id="appVersion">v13 · thème neutre · 31-08-2026</strong>
     </div>
   </div>
 
@@ -1270,7 +1120,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
         <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin:16px 0;">
           <button onclick="changeUnit(-1)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);width:48px;height:48px;border-radius:50%;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
           <div style="text-align:center;">
-            <div id="unitCount" style="font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:var(--accent)">1</div>
+            <div id="unitCount" style="font-family:'Inter',sans-serif;font-size:52px;line-height:1;color:var(--accent)">1</div>
             <div id="unitName2" style="font-size:12px;color:var(--muted2)">boîte</div>
           </div>
           <button onclick="changeUnit(+1)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);width:48px;height:48px;border-radius:50%;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
@@ -1366,7 +1216,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:no
 <!-- MODAL: Barcode Scanner -->
 <div class="overlay" id="barcodeScanModal" style="z-index:600;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;">
   <div style="width:100%;max-width:430px;padding:20px;text-align:center;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;margin-bottom:16px;">SCANNER LE CODE-BARRES</div>
+    <div style="font-family:'Inter',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;margin-bottom:16px;">SCANNER LE CODE-BARRES</div>
     <div style="position:relative;width:100%;border-radius:16px;overflow:hidden;background:#000;">
       <video id="barcodeVideo" style="width:100%;display:block;max-height:60vh;object-fit:cover;" playsinline autoplay muted></video>
       <!-- Viewfinder overlay -->
@@ -1687,6 +1537,13 @@ async function loadState() {
   if (!S.watchCal) S.watchCal = {};
   if (!S.settings) S.settings = { tdee:2300, protTarget:185, goalWeight:85, maxCal:1200, tdeeMode:'base' };
   if (!S.settings.tdeeMode) S.settings.tdeeMode = 'base';
+  // Objectifs glucides et lipides : calcules une fois a partir du budget,
+  // puis modifiables librement dans les reglages.
+  if (S.settings.fatTarget == null || S.settings.carbTarget == null) {
+    const d = suggestMacroTargets(S.settings.maxCal, S.settings.protTarget);
+    if (S.settings.fatTarget == null)  S.settings.fatTarget  = d.fat;
+    if (S.settings.carbTarget == null) S.settings.carbTarget = d.carb;
+  }
 
   // 4. Lancement direct, sans ecran de bienvenue
   if (!S.profile) S.profile = defaultProfile();
@@ -1702,13 +1559,21 @@ const _tNow = new Date();
 const TODAY = _tNow.getFullYear() + '-' + String(_tNow.getMonth()+1).padStart(2,'0') + '-' + String(_tNow.getDate()).padStart(2,'0');
 let selectedFood = null;
 
+const DEFAULT_APP_NAME = 'Go To Summer Body';
+
 function applyProfileName() {
-  const firstName = (S.profile && S.profile.firstName) || 'Tania';
-  document.title = firstName.toUpperCase() + ' FIT';
+  // Le nom affiche est un reglage independant du prenom.
+  const name = (S.settings && S.settings.appName) || DEFAULT_APP_NAME;
+  document.title = name.toUpperCase();
   const t = document.getElementById('appTitle');
-  if (t) t.textContent = firstName + ' Fit';
+  if (t) {
+    t.textContent = name;
+    // Les noms longs sont retrecis pour tenir sur une ligne du bandeau
+    const n = name.length;
+    t.style.fontSize = n > 22 ? '20px' : n > 16 ? '24px' : n > 12 ? '27px' : '';
+  }
   const sidebarTitle = document.getElementById('sidebarTitle');
-  if (sidebarTitle) sidebarTitle.textContent = firstName.toUpperCase() + ' FIT';
+  if (sidebarTitle) sidebarTitle.textContent = name.toUpperCase();
 }
 
 function init() {
@@ -1719,6 +1584,7 @@ function init() {
   document.getElementById('headerDate').textContent = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   loadSettings();
   applyTdeeMode();
+  renderMacroDetail();
   updateHeader();
   renderToday();
   renderWeek();
@@ -1749,14 +1615,16 @@ function loadSettings() {
   document.getElementById('sDeficit').value = Math.min(1500, Math.max(50, deficit));
   document.getElementById('sTDEE').value = tdee;
   document.getElementById('sProt').value = S.settings.protTarget;
+  const _c = document.getElementById('sCarb'); if (_c) _c.value = S.settings.carbTarget || '';
+  const _fa = document.getElementById('sFat'); if (_fa) _fa.value = S.settings.fatTarget || '';
   document.getElementById('sGoal').value = S.settings.goalWeight;
   document.getElementById('targCal').textContent = maxCal;
-  document.getElementById('targProt').textContent = S.settings.protTarget;
   onDeficitChange();
   const _p = S.profile || {};
   const _sw = document.getElementById('sStartWeight'); if (_sw) _sw.value = _p.startWeight || '';
   const _sd = document.getElementById('sStartDate');   if (_sd) _sd.value = _p.startDate || '';
   const _fn = document.getElementById('sFirstName');   if (_fn) _fn.value = _p.firstName || '';
+  const _an = document.getElementById('sAppName');     if (_an) _an.value = (S.settings && S.settings.appName) || DEFAULT_APP_NAME;
   const _apiKey = (S.settings && S.settings.claudeApiKey) || (S.profile && S.profile.claudeApiKey);
   if (_apiKey) {
     document.getElementById('sApiKey') && (document.getElementById('sApiKey').value = _apiKey);
@@ -2045,6 +1913,61 @@ function deleteActivityForDay() {
   showToast('Activité effacée ✓');
 }
 
+let macroDetailOpen = false;
+function toggleMacroDetail() {
+  macroDetailOpen = !macroDetailOpen;
+  renderMacroDetail();
+}
+
+function macroRows() {
+  const m = getDayMacros(TODAY), st = S.settings || {};
+  return [
+    { key:'Protéines', short:'Prot', val:m.prot, targ:st.protTarget || 0, color:'var(--accent)', over:false },
+    { key:'Glucides',  short:'Carb', val:m.carb, targ:st.carbTarget || 0, color:'var(--blue)',   over:true  },
+    { key:'Lipides',   short:'Fat',  val:m.fat,  targ:st.fatTarget  || 0, color:'var(--purple)', over:true  }
+  ];
+}
+
+function renderMacroDetail() {
+  const rows = macroRows();
+  const ids = ['Prot','Carb','Fat'];
+  const circ = [131.9, 94.2, 56.5];
+  rows.forEach((r, i) => {
+    const pct = r.targ > 0 ? Math.min(100, Math.round(r.val / r.targ * 100)) : 0;
+    const ring = document.getElementById('ring' + ids[i]);
+    if (ring) ring.style.strokeDashoffset = circ[i] - (circ[i] * pct / 100);
+    const v = document.getElementById('ml' + ids[i]);
+    const t = document.getElementById('ml' + ids[i] + 'T');
+    if (v) {
+      v.textContent = Math.round(r.val);
+      // Dépassement signalé en rouge pour glucides et lipides seulement
+      v.style.color = (r.over && r.targ > 0 && r.val > r.targ) ? 'var(--red)' : 'var(--text)';
+    }
+    if (t) t.textContent = r.targ;
+  });
+
+  const card = document.getElementById('macroDetailCard');
+  const body = document.getElementById('macroDetailBody');
+  const chev = document.getElementById('macroChev');
+  if (chev) chev.style.transform = macroDetailOpen ? 'rotate(180deg)' : '';
+  if (!card || !body) return;
+  card.style.display = macroDetailOpen ? 'block' : 'none';
+  if (!macroDetailOpen) return;
+  body.innerHTML = rows.map(r => {
+    const pct = r.targ > 0 ? Math.min(100, Math.round(r.val / r.targ * 100)) : 0;
+    const left = Math.round(r.targ - r.val);
+    const note = left > 0 ? `encore ${left} g` : (r.over ? `dépassé de ${-left} g` : `objectif atteint`);
+    const noteCol = (left <= 0 && r.over) ? 'var(--red)' : 'var(--muted2)';
+    return `<div class="macro-bar-row">
+      <div class="macro-bar-top">
+        <span style="font-weight:700;color:var(--text)">${r.key}</span>
+        <span style="color:${noteCol}"><strong style="color:${r.color}">${Math.round(r.val)}</strong> / ${r.targ} g · ${note}</span>
+      </div>
+      <div class="macro-bar-track"><div class="macro-bar-fill" style="width:${pct}%;background:${r.color}"></div></div>
+    </div>`;
+  }).join('') + `<div style="font-size:10.5px;color:var(--muted2);margin-top:10px;line-height:1.5;">Objectifs modifiables dans Réglages.</div>`;
+}
+
 function getStepsCalories(date) {
   // Priorité à la valeur Apple Watch si présente (énergie active mesurée)
   if (S.watchCal && S.watchCal[date]) return Math.round(S.watchCal[date]);
@@ -2055,21 +1978,32 @@ function getStepsCalories(date) {
   return Math.round(0.314 * weight * steps / 1000);
 }
 
+// Repartition de depart : ~28% des kcal en lipides, le reste en glucides
+// une fois les proteines deduites. 4 kcal/g pour prot et gluc, 9 pour lip.
+function suggestMacroTargets(maxCal, protTarget) {
+  const cal = maxCal || 1200, prot = protTarget || 120;
+  const fat = Math.round(cal * 0.28 / 9);
+  const carb = Math.max(0, Math.round((cal - prot * 4 - fat * 9) / 4));
+  return { fat, carb };
+}
+
 function getDayMacros(date) {
   const meals = S.meals[date] || [];
   const sports = S.sportLog[date] || [];
   const cal = meals.reduce((s,m) => s+m.cal, 0);
   const prot = meals.reduce((s,m) => s+m.prot, 0);
-  const carb = meals.reduce((s,m) => s+m.carb, 0);
+  const carb = meals.reduce((s,m) => s+(m.carb||0), 0);
+  const fat  = meals.reduce((s,m) => s+(m.fat||0), 0);
   // Mode "dépense totale" : le chiffre saisi contient deja l'activite,
   // donc on n'ajoute rien par-dessus, sous peine de compter deux fois.
-  if (S.settings && S.settings.tdeeMode === 'total') return { cal, prot, carb, burned: 0 };
+  if (S.settings && S.settings.tdeeMode === 'total') return { cal, prot, carb, fat, burned: 0 };
   const sportBurned = sports.reduce((s,sp) => s+sp.cal, 0);
   const burned = sportBurned + getStepsCalories(date);
-  return { cal, prot, carb, burned };
+  return { cal, prot, carb, fat, burned };
 }
 
 function updateMacros() {
+  renderMacroDetail();
   const m = getDayMacros(TODAY);
   const tdee = S.settings.tdee || 2300;
   const protT = S.settings.protTarget || 185;
@@ -2081,9 +2015,7 @@ function updateMacros() {
   const defPct = Math.min(100, Math.max(0, Math.round(netDeficit / TARGET_DEFICIT * 100)));
   const C = 131.9;
   document.getElementById('valCal').textContent = Math.round(m.cal);
-  document.getElementById('valProt').textContent = Math.round(m.prot);
   document.getElementById('targCal').textContent = Math.round(budgetToday);
-  document.getElementById('targProt').textContent = protT;
   const defEl = document.getElementById('valDef');
   let defColor;
   if (netDeficit >= TARGET_DEFICIT) defColor = 'var(--accent)';
@@ -2102,9 +2034,7 @@ function updateMacros() {
   document.getElementById('defSubLabel').textContent = defSubText;
   document.getElementById('defSubLabel').style.color = defSubColor;
   document.getElementById('pctCal').textContent = calPct + '%';
-  document.getElementById('pctProt').textContent = protPct + '%';
   document.getElementById('ringCal').style.strokeDashoffset = C - (C * calPct / 100);
-  document.getElementById('ringProt').style.strokeDashoffset = C - (C * protPct / 100);
   document.getElementById('ringDef').style.strokeDashoffset = C - (C * defPct / 100);
   const total = Math.max(tdee + m.burned, m.cal + 1);
   const eatPct = Math.min(100, Math.round(m.cal / total * 100));
@@ -2608,15 +2538,15 @@ function renderControl() {
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent2)">${neededPerWeek}</div>
+        <div style="font-family:'Inter',sans-serif;font-size:26px;color:var(--accent2)">${neededPerWeek}</div>
         <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg/sem visé</div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--green)">${realRateTxt}</div>
+        <div style="font-family:'Inter',sans-serif;font-size:26px;color:var(--green)">${realRateTxt}</div>
         <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg/sem réel</div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--blue)">${weeksLeft}</div>
+        <div style="font-family:'Inter',sans-serif;font-size:26px;color:var(--blue)">${weeksLeft}</div>
         <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">semaines restantes</div>
       </div>
     </div>
@@ -2727,7 +2657,7 @@ function renderProjections() {
         </div>
       </div>
       <div style="text-align:right;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${color}">${m.target} kg</div>
+        <div style="font-family:'Inter',sans-serif;font-size:20px;color:${color}">${m.target} kg</div>
         <div style="font-size:10px;color:var(--muted2)">~${dateStr}</div>
       </div>
     </div>`;
@@ -3033,6 +2963,9 @@ function saveSettings() {
   S.settings.tdee = tdee;
   S.settings.maxCal = tdee - deficit;
   S.settings.protTarget = parseInt(document.getElementById('sProt').value) || 185;
+  const _sug = suggestMacroTargets(S.settings.maxCal, S.settings.protTarget);
+  S.settings.carbTarget = parseInt(document.getElementById('sCarb').value) || _sug.carb;
+  S.settings.fatTarget  = parseInt(document.getElementById('sFat').value)  || _sug.fat;
   S.settings.goalWeight = parseFloat(document.getElementById('sGoal').value) || 85;
   if (!S.profile) S.profile = defaultProfile();
   S.profile.goalWeight = S.settings.goalWeight;
@@ -3042,9 +2975,11 @@ function saveSettings() {
   if (sd) S.profile.startDate = sd;
   const fn = document.getElementById('sFirstName').value.trim();
   if (fn) S.profile.firstName = fn;
+  const an = document.getElementById('sAppName').value.trim();
+  S.settings.appName = an || DEFAULT_APP_NAME;
   save();
   computeConstants();
-  loadSettings(); applyTdeeMode(); updateMacros(); updateHeader(); applyProfileName();
+  loadSettings(); applyTdeeMode(); updateMacros(); updateHeader(); applyProfileName(); renderMacroDetail();
   renderToday(); renderWeek(); renderPoids(); renderControl();
   showToast('Objectifs enregistrés ✓');
 }
@@ -3658,7 +3593,7 @@ function selectSport(id) {
       cursor:pointer;
       transition:all 0.15s;
       active:border-color:var(--accent);">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;color:var(--text)">${min}</div>
+      <div style="font-family:'Inter',sans-serif;font-size:30px;line-height:1;color:var(--text)">${min}</div>
       <div style="font-size:10px;color:var(--muted2);margin:3px 0 10px;letter-spacing:0.5px;">min</div>
       <div style="font-size:14px;font-weight:600;color:var(--green)">~${cal}</div>
       <div style="font-size:10px;color:var(--muted2)">kcal</div>
@@ -3883,7 +3818,9 @@ function toggleAccordion(id, headerEl) {
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light-theme');
   document.getElementById('themeToggle').classList.toggle('on', isLight);
-  document.getElementById('themeColor').content = isLight ? '#1a1424' : '#f5c870';
+  document.getElementById('themeColor').content = isLight ? '#14171a' : '#f7f7f5';
+  // Le canevas peint les zones sures iOS : il doit suivre le theme.
+  document.documentElement.style.background = isLight ? '#14171a' : '#f7f7f5';
   try { localStorage.setItem(STORAGE_NS + '_theme', isLight ? 'light' : 'dark'); } catch(e) {}
 }
 
